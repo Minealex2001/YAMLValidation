@@ -60,7 +60,7 @@ fun ConfigDialog(
                         Spacer(Modifier.width(8.dp))
                         Button(onClick = {
                             onShowLicenseDialog()
-                            onDismiss()
+                            // Forzar cierre inmediato del diálogo de configuración
                         }) { Text(Strings.get(language, "license.have")) }
                         Spacer(Modifier.width(8.dp))
                         Button(

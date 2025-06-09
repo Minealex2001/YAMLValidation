@@ -30,7 +30,7 @@ class ValidatorCore(
                     fw.write("[$level] $message\n")
                 }
             } catch (e: IOException) {
-                val errMsg = Strings.get(language, "log_file_write_error") + ": ${e.message}"
+                val errMsg = Strings.get(language, "validation_log_file_write_error") + ": ${e.message}"
                 logger.log("ERROR", errMsg)
                 logHistory.add("[ERROR] $errMsg")
             }
@@ -49,7 +49,7 @@ class ValidatorCore(
         try {
             val input = File(yamlPath)
             if (!input.exists() || !input.isFile) {
-                val msg = Strings.get(language, "yaml_file_not_found") + ": $yamlPath"
+                val msg = Strings.get(language, "validation_yaml_file_not_found")
                 log("ERROR", msg)
                 yamlData = emptyMap()
                 return ValidationResult(false, msg)
@@ -58,7 +58,7 @@ class ValidatorCore(
             val loaded = input.inputStream().use { yaml.load<Map<String, Any?>>(it) }
             yamlData = loaded ?: emptyMap()
             if (!yamlData.containsKey("paths")) {
-                val msg = Strings.get(language, "yaml_missing_paths")
+                val msg = Strings.get(language, "validation_yaml_missing_paths")
                 log("ERROR", msg)
                 yamlData = emptyMap()
                 return ValidationResult(false, msg)
@@ -66,7 +66,7 @@ class ValidatorCore(
             // Log de éxito tras carga
             log("SUCCESS", "YAML loaded successfully. Keys: ${yamlData.keys}")
         } catch (e: Exception) {
-            val msg = Strings.get(language, "yaml_load_error") + ": ${e.message ?: ""}\n${e.stackTraceToString()}"
+            val msg = Strings.get(language, "validation_yaml_load_error") + ": ${e.message ?: ""}\n${e.stackTraceToString()}"
             log("ERROR", msg)
             yamlData = emptyMap()
             return ValidationResult(false, msg)

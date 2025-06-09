@@ -271,10 +271,6 @@ fun App() {
                 ).toInt() else 7
                 val trialActive = !licenseValid && trialStart != null && daysLeft > 0
                 val trialUsed = trialStartDate != null
-                if (!licenseValid && !trialActive) {
-                    Box(Modifier.fillMaxSize().background(Color(0xFF222831))) {}
-                    return@MaterialTheme
-                }
 
                 if (!licenseValid && trialStartDate != null && daysLeft > 0) {
                     // Permitir que la app se renderice si la prueba está activa
@@ -367,13 +363,14 @@ fun App() {
                     licenseInput = licenseInput,
                     onLicenseInputChange = { licenseInput = it },
                     licenseError = licenseError,
+                    language = language,
                     onActivate = {
                         if (LicenseManager.validateKey(licenseInput)) {
                             LicenseManager.saveLicenseKey(licenseInput)
                             licenseValid = true
                             showLicenseDialog = false
                         } else {
-                            licenseError = "Clave inválida. Solicita una clave válida."
+                            licenseError = Strings.get(language, "license.invalid")
                         }
                     },
                     onTrial = if (!trialActive) {
@@ -388,7 +385,7 @@ fun App() {
                     } else null,
                     trialActive = trialActive,
                     daysLeft = daysLeft,
-                    trialUsed = trialUsed
+                    trialUsed = trialUsed,
                 )
             }
         }

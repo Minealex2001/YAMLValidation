@@ -36,14 +36,16 @@ object Strings {
         "license.key" to "Clave de licencia",
         "license.invalid" to "Clave inválida. Solicita una clave válida.",
         "license.activate" to "Activar",
-        "license.trialActive" to "Prueba activa: {0} días restantes",
         "trial.expired.title" to "Prueba expirada",
         "trial.expired.text" to "El periodo de prueba de 7 días ha expirado. Por favor, adquiere una licencia para continuar usando la aplicación.",
-        "license.activated" to "✅ Licencia activada",
-        "license.notActivated" to "❎Licencia no activada",
+        "license.activated" to "✅ Activada",
+        "license.notActivated" to "❎ No activada",
         "license.trialActive" to "⌛Prueba activa: {0} días restantes",
         "license.activationError" to "Error al activar la licencia. Por favor, verifica tu clave.",
-        "license.trialUsed" to "Prueba ya utilizada. Por favor, adquiere una licencia para continuar."
+        "license.trialUsed" to "Prueba ya utilizada. Por favor, adquiere una licencia para continuar.",
+        "validation_log_file_write_error" to "Error al escribir en el archivo de registro de validación",
+        "validation_yaml_file_not_found" to "Archivo YAML no encontrado",
+        "validation_yaml_missing_paths" to "El archivo YAML debe contener la clave 'paths' para ser válido"
     )
     val en = mapOf(
         "app.title" to "YAML Validator",
@@ -83,10 +85,13 @@ object Strings {
         "license.trialActive" to "⌛Trial active: {0} days left",
         "trial.expired.title" to "Trial expired",
         "trial.expired.text" to "The 7-day trial period has expired. Please purchase a license to continue using the application.",
-        "license.activated" to "✅ License activated",
-        "license.notActivated" to "❎ License not activated",
+        "license.activated" to "✅ Activated",
+        "license.notActivated" to "❎ Not activated",
         "license.activationError" to "Error activating license. Please check your key.",
-        "license.trialUsed" to "Trial already used. Please purchase a license to continue."
+        "license.trialUsed" to "Trial already used. Please purchase a license to continue.",
+        "validation_log_file_write_error" to "Error writing validation log file",
+        "validation_yaml_file_not_found" to "YAML file not found",
+        "validation_yaml_missing_paths" to "The YAML file must contain the 'paths' key to be valid"
     )
     val ca = mapOf(
         "app.title" to "Validació YAML",
@@ -126,10 +131,13 @@ object Strings {
         "license.trialActive" to "⌛Prova activa: {0} dies restants",
         "trial.expired.title" to "Prova expirada",
         "trial.expired.text" to "El període de prova de 7 dies ha expirat. Si us plau, adquireix una llicència per continuar utilitzant l'aplicació.",
-        "license.activated" to "✅Llicència activada",
-        "license.notActivated" to "❎Llicència no activada",
+        "license.activated" to "✅ Activada",
+        "license.notActivated" to "❎ No activada",
         "license.activationError" to "Error en activar la llicència. Si us plau, comprova la teva clau.",
-        "license.trialUsed" to "Prova ja utilitzada. Si us plau, adquireix una llicència per continuar."
+        "license.trialUsed" to "Prova ja utilitzada. Si us plau, adquireix una llicència per continuar.",
+        "validation_log_file_write_error" to "Error al escriure al fitxer de registre de validació",
+        "validation_yaml_file_not_found" to "Fitxer YAML no trobat",
+        "validation_yaml_missing_paths" to "El fitxer YAML ha de contenir la clau 'paths' per ser vàlid"
     )
     fun get(lang: String, key: String): String {
         return when(lang) {
