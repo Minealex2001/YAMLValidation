@@ -43,6 +43,7 @@ import androidx.compose.ui.window.rememberWindowState
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.unit.DpSize
 import org.queststudios.yamlvalidation.licensing.LicenseManager
+import org.queststudios.yamlvalidation.ConfigDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,13 +67,13 @@ fun App() {
                 .fillMaxSize()
                 .background(Color(0xFF222831))
         ) {
-            // Si no hay licencia ni prueba activa, mostrar pantalla bloqueada
             if (!licenseValid && !trialActive) {
+                // Pantalla bloqueada/licencia
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    // Opcionalmente mostrar un mensaje o logo aquí
+                    // Aquí puedes poner un logo o mensaje
                 }
             } else {
                 // Aquí va todo el contenido de la app
@@ -162,89 +163,22 @@ fun App() {
                 }
 
                 // Configuración modal
-                if (showConfigDialog) {
-                    AlertDialog(
-                        onDismissRequest = { showConfigDialog = false },
-                        title = { Text(Strings.get(language, "config.title")) },
-                        text = {
-                            Column {
-                                // Estado de licencia
-                                val isActivated = licenseValid
-                                val trialStartFile = File(System.getProperty("user.home") + File.separator + "Documentos" + File.separator + "ValidadorYAML" + File.separator + "trial_start.txt")
-                                val trialStart = remember {
-                                    if (trialStartFile.exists()) {
-                                        trialStartFile.readText().trim()
-                                } else {
-                                    null
-                                }
-                                }
-                                val daysLeft = if (trialStart != null) 7 - java.time.temporal.ChronoUnit.DAYS.between(
-                                    java.time.LocalDate.parse(trialStart),
-                                    java.time.LocalDate.now()
-                                ).toInt() else 7
-                                val trialActive = !isActivated && trialStart != null && daysLeft > 0
-                                val trialUsed = trialStartDate != null
-                                val licenseStatus = when {
-                                    isActivated -> "✅ Activada"
-                                    trialActive -> "🕒 Prueba (${daysLeft} días restantes)"
-                                    else -> "❌ No activada"
-                                }
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Text("Licencia: $licenseStatus", fontWeight = FontWeight.Bold)
-                                    if (!isActivated) {
-                                        Spacer(Modifier.width(8.dp))
-                                        Button(onClick = {
-                                            showLicenseDialog = true
-                                            showConfigDialog = false
-                                        }) { Text("Tengo licencia") }
-                                        Spacer(Modifier.width(8.dp))
-                                        Button(
-                                            onClick = {
-                                                if (!trialUsed) {
-                                                    val today = java.time.LocalDate.now().toString()
-                                                    LicenseManager.saveTrialStartDate(today)
-                                                    trialStartDate = today
-                                                    showConfigDialog = false
-                                                }
-                                            },
-                                            enabled = !trialUsed
-                                        ) { Text("No tengo licencia (Prueba 7 días)") }
-                                    }
-                                }
-                                Spacer(Modifier.height(16.dp))
-                                OutlinedTextField(
-                                    value = spectralPath,
-                                    onValueChange = { spectralPath = it },
-                                    label = { Text(Strings.get(language, "spectral.selectFolder")) },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    trailingIcon = {
-                                        Button(onClick = { showSpectralChooser = true }) { Text(Strings.get(language, "export.selectFolder")) }
-                                }
-                                )
-                                Spacer(Modifier.height(12.dp))
-                                OutlinedTextField(
-                                    value = language,
-                                    onValueChange = {},
-                                    label = { Text(Strings.get(language, "menu.language")) },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    readOnly = true,
-                                    trailingIcon = {
-                                        var expanded by remember { mutableStateOf(false) }
-                                        Button(onClick = { expanded = true }) { Text(language.uppercase()) }
-                                        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                                            DropdownMenuItem(text = { Text("Español") }, onClick = { language = "es"; expanded = false; config.setLanguage("es") })
-                                            DropdownMenuItem(text = { Text("English") }, onClick = { language = "en"; expanded = false; config.setLanguage("en") })
-                                            DropdownMenuItem(text = { Text("Català") }, onClick = { language = "ca"; expanded = false; config.setLanguage("ca") })
-                                        }
-                                    }
-                                )
-                            }
-                        },
-                        confirmButton = {
-                            Button(onClick = { showConfigDialog = false }) { Text(Strings.get(language, "config.close")) }
-                        }
-                    )
-                }
+                ConfigDialog(
+                    showConfigDialog = showConfigDialog,
+                    onDismiss = { showConfigDialog = false },
+                    licenseValid = licenseValid,
+                    trialStartDate = trialStartDate,
+                    onShowLicenseDialog = {
+                        showLicenseDialog = true
+                        showConfigDialog = false
+                    },
+                    spectralPath = spectralPath,
+                    onSpectralPathChange = { spectralPath = it },
+                    onShowSpectralChooser = { showSpectralChooser = true },
+                    language = language,
+                    onLanguageChange = { language = it },
+                    config = config
+                )
 
                 if (showLicenseDialog) {
                     // --- Lógica de prueba (trial) ---
@@ -263,20 +197,20 @@ fun App() {
                     val trialActive = !licenseValid && trialStart != null && daysLeft > 0
                     val trialUsed = trialStartDate != null
                     val licenseStatus = when {
-                        licenseValid -> "✅ Activada"
-                        trialActive -> "🕒 Prueba (${daysLeft} días restantes)"
-                        else -> "❌ No activada"
+                        licenseValid -> Strings.get(language, "license.activated")
+                        trialActive -> Strings.get(language, "license.trialActive").replace("{0}", daysLeft.toString())
+                        else -> Strings.get(language, "license.notActivated")
                     }
                     AlertDialog(
                         onDismissRequest = {},
-                        title = { Text("Activación de licencia") },
+                        title = { Text(Strings.get(language, "license.title")) },
                         text = {
                             Column {
-                                Text("Introduce tu clave de licencia para activar el Validador YAML.")
+                                Text(Strings.get(language, "license.intro"))
                                 OutlinedTextField(
                                     value = licenseInput,
                                     onValueChange = { licenseInput = it },
-                                    label = { Text("Clave de licencia") },
+                                    label = { Text(Strings.get(language, "license.key")) },
                                     modifier = Modifier.fillMaxWidth()
                                 )
                                 if (licenseError != null) Text(licenseError!!, color = Color.Red)
@@ -308,9 +242,9 @@ fun App() {
                                         },
                                         enabled = !trialUsed,
                                         modifier = Modifier.fillMaxWidth()
-                                    ) { Text("No tengo licencia (Prueba 7 días)") }
+                                    ) { Text(Strings.get(language, "license.trial")) }
                                 } else {
-                                    Text("Prueba activa: $daysLeft días restantes", color = Color(0xFF00ADB5), fontWeight = FontWeight.Bold)
+                                    Text(Strings.get(language, "license.trialActive").replace("{0}", daysLeft.toString()), color = Color(0xFF00ADB5), fontWeight = FontWeight.Bold)
                                 }
                             }
                         },
@@ -321,9 +255,9 @@ fun App() {
                                     licenseValid = true
                                     showLicenseDialog = false
                                 } else {
-                                    licenseError = "Clave inválida. Solicita una clave válida."
+                                    licenseError = Strings.get(language, "license.invalid")
                                 }
-                            }) { Text("Activar") }
+                            }) { Text(Strings.get(language, "license.activate")) }
                         }
                     )
                 }
@@ -336,6 +270,7 @@ fun App() {
                     java.time.LocalDate.now()
                 ).toInt() else 7
                 val trialActive = !licenseValid && trialStart != null && daysLeft > 0
+                val trialUsed = trialStartDate != null
                 if (!licenseValid && !trialActive) {
                     Box(Modifier.fillMaxSize().background(Color(0xFF222831))) {}
                     return@MaterialTheme
@@ -361,221 +296,99 @@ fun App() {
                         verticalArrangement = Arrangement.SpaceBetween
                     ) {
                         Spacer(Modifier.height(8.dp))
-                        // Banner de error/éxito
-                        AnimatedVisibility(errorBanner != null) {
-                            Card(
-                                modifier = Modifier.fillMaxWidth(), // Cambia de 0.5f a fillMaxWidth
-                                colors = CardDefaults.cardColors(containerColor = if (errorBanner?.contains("error", true) == true) Color(0xFFFF5555) else Color(0xFF50DC78)),
-                                elevation = CardDefaults.cardElevation(4.dp)
-                            ) {
-                                Row(
-                                    Modifier.padding(12.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(errorBanner ?: "", color = Color.White, modifier = Modifier.weight(1f))
-                                    Spacer(Modifier.width(8.dp))
-                                    Button(onClick = { errorBanner = null }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF393E46))) {
-                                        Text("OK", color = Color.White)
-                                    }
+                        ErrorBanner(errorBanner) { errorBanner = null }
+                        MainCard(
+                            yamlPath = yamlPath,
+                            onYamlPathChange = { yamlPath = it },
+                            onYamlChooser = { showYamlChooser = true },
+                            language = language,
+                            logger = logger,
+                            validator = validator,
+                            onValidate = {
+                                logger.logs.clear()
+                                val result = validator.runAllValidations()
+                                if (!result.success) {
+                                    errorBanner = result.errorMessage
                                 }
-                            }
-                        }
-                        // Card principal
-                        Card(
-                            modifier = Modifier.fillMaxWidth(), // Cambia de 0.5f a fillMaxWidth
-                            shape = RoundedCornerShape(24.dp),
-                            elevation = CardDefaults.cardElevation(8.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color(0xFF393E46))
-                        ) {
-                            Column(
-                                modifier = Modifier.padding(32.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text(
-                                    Strings.get(language, "app.title"),
-                                    style = MaterialTheme.typography.headlineMedium,
-                                    color = Color(0xFF00ADB5),
-                                    fontWeight = FontWeight.Bold,
-                                    modifier = Modifier.fillMaxWidth(),
-                                    textAlign = TextAlign.Center
-                                )
-                                Spacer(Modifier.height(20.dp))
-                                OutlinedTextField(
-                                    value = yamlPath,
-                                    onValueChange = { yamlPath = it },
-                                    label = { Text(Strings.get(language, "file.label")) },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    trailingIcon = {
-                                        Button(onClick = { showYamlChooser = true }) { Text(Strings.get(language, "file.open")) }
+                            },
+                            onSpectral = {
+                                if (yamlPath.isNotEmpty() && spectralPath.isNotEmpty()) {
+                                    try {
+                                        val process = ProcessBuilder(
+                                            "cmd", "/c", "spectral lint -r ./poc/.spectral_v2.yaml -f pretty \"$yamlPath\""
+                                        ).directory(File(spectralPath)).redirectErrorStream(true).start()
+                                        val output = process.inputStream.bufferedReader().use(BufferedReader::readText)
+                                        val exitCode = process.waitFor()
+                                        spectralOutput =
+                                            "[Spectral exit code: $exitCode]\n" + output + if (exitCode != 0) "\n[ERROR] Spectral failed. Check if spectral is installed and the rule file exists." else ""
+                                    } catch (e: Exception) {
+                                        spectralOutput = Strings.get(language, "export.error") + " ${e.message}"
                                     }
-                                )
-                                Spacer(Modifier.height(12.dp))
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Button(onClick = {
-                                        logger.logs.clear()
-                                        val result = validator.runAllValidations()
-                                        if (!result.success) {
-                                            errorBanner = result.errorMessage
-                                        }
-                                    }) {
-                                        Text(Strings.get(language, "validate.button"))
-                                    }
-                                    Button(onClick = {
-                                        if (yamlPath.isNotEmpty() && spectralPath.isNotEmpty()) {
-                                            try {
-                                                val process = ProcessBuilder(
-                                                    "cmd", "/c", "spectral lint -r ./poc/.spectral_v2.yaml -f pretty \"$yamlPath\""
-                                                ).directory(File(spectralPath)).redirectErrorStream(true).start()
-                                                val output = process.inputStream.bufferedReader().use(BufferedReader::readText)
-                                                val exitCode = process.waitFor()
-                                                spectralOutput =
-                                                    "[Spectral exit code: $exitCode]\n" + output + if (exitCode != 0) "\n[ERROR] Spectral failed. Check if spectral is installed and the rule file exists." else ""
-                                            } catch (e: Exception) {
-                                                spectralOutput = Strings.get(language, "export.error") + " ${e.message}"
-                                            }
-                                        } else {
-                                            spectralOutput = Strings.get(language, "error.noYaml")
-                                        }
-                                    }) {
-                                        Text(Strings.get(language, "export.spectral"))
-                                    }
-                                    Button(onClick = { showExportChooser = true }) {
-                                        Text(Strings.get(language, "output.export"))
-                                    }
-                                    Button(onClick = { showConfigDialog = true }) {
-                                        Text(Strings.get(language, "config.open"))
-                                    }
+                                } else {
+                                    spectralOutput = Strings.get(language, "error.noYaml")
                                 }
-                            }
-                        }
-                        Spacer(Modifier.height(16.dp))
-                        // Tabs de resultados
-                        Card(
-                            modifier = Modifier.fillMaxWidth(), // Cambia de 0.5f a fillMaxWidth
-                            shape = RoundedCornerShape(18.dp),
-                            elevation = CardDefaults.cardElevation(6.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color(0xFF23272F))
-                        ) {
-                            Column(
-                                modifier = Modifier.padding(24.dp),
-                                horizontalAlignment = Alignment.Start
-                            ) {
-                                TabRow(selectedTabIndex = selectedTab) {
-                                    Tab(selected = selectedTab == 0, onClick = { selectedTab = 0 }, text = { Text(Strings.get(language, "tab.appValidations")) })
-                                    Tab(selected = selectedTab == 1, onClick = { selectedTab = 1 }, text = { Text(Strings.get(language, "tab.spectralValidations")) })
-                                }
-                                Spacer(Modifier.height(8.dp))
-                                Box(Modifier.heightIn(min = 200.dp, max = 320.dp).fillMaxWidth().verticalScroll(rememberScrollState())) {
-                                    when (selectedTab) {
-                                        0 -> Column(Modifier.fillMaxWidth()) {
-                                            logger.logs.forEach { (level, msg) ->
-                                                val color = when (level.uppercase()) {
-                                                    "ERROR" -> Color(0xFFFF5555)
-                                                    "WARNING", "WARN" -> Color(0xFFFFB43C)
-                                                    "SUCCESS", "OK" -> Color(0xFF50DC78)
-                                                    "INFO" -> Color(0xFF00ADB5)
-                                                    else -> Color(0xFFECECEC)
-                                                }
-                                                Text("[$level] $msg", color = color)
-                                            }
-                                        }
-                                        1 -> Column(Modifier.fillMaxWidth()) {
-                                            if (spectralOutput.isNotBlank()) {
-                                                Text(spectralOutput, color = Color(0xFFB0B0B0))
-                                            } else {
-                                                
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        Spacer(Modifier.height(8.dp))
-                        Text(
-                            "© 2025 Alejandro Sánchez Pinto | alejandro.sanchezpinto@emeal.nttdata.com",
-                            color = Color(0xFFAAAAAA),
-                            style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.Center
+                            },
+                            onExport = { showExportChooser = true },
+                            onConfig = { showConfigDialog = true },
+                            spectralPath = spectralPath,
+                            showYamlChooser = showYamlChooser,
+                            showSpectralChooser = showSpectralChooser,
+                            showExportChooser = showExportChooser,
+                            Strings = Strings
                         )
+                        Spacer(Modifier.height(16.dp))
+                        ResultsTabs(
+                            selectedTab = selectedTab,
+                            onTabChange = { selectedTab = it },
+                            logger = logger,
+                            spectralOutput = spectralOutput,
+                            language = language,
+                            Strings = Strings
+                        )
+                        Spacer(Modifier.height(8.dp))
+                        AppFooter()
                     }
                 }
+                if (showTrialExpiredDialog) {
+                    AlertDialog(
+                        onDismissRequest = {},
+                        title = { Text(Strings.get(language, "trial.expired.title")) },
+                        text = { Text(Strings.get(language, "trial.expired.text")) },
+                        confirmButton = {
+                            Button(onClick = { System.exit(0) }) { Text("OK") }
+                        }
+                    )
+                }
             }
-
-            // Los diálogos siempre se renderizan encima de todo
             if (showLicenseDialog) {
-                AlertDialog(
-                    onDismissRequest = {},
-                    title = { Text("Activación de licencia") },
-                    text = {
-                        Column {
-                            Text("Introduce tu clave de licencia para activar el Validador YAML.")
-                            OutlinedTextField(
-                                value = licenseInput,
-                                onValueChange = { licenseInput = it },
-                                label = { Text("Clave de licencia") },
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                            if (licenseError != null) Text(licenseError!!, color = Color.Red)
-                            Spacer(Modifier.height(12.dp))
-                            // --- Añadir botón de prueba de 7 días ---
-                            val trialStartFile = File(System.getProperty("user.home") + File.separator + "Documentos" + File.separator + "ValidadorYAML" + File.separator + "trial_start.txt")
-                            val trialStart = remember {
-                                if (trialStartFile.exists()) {
-                                    trialStartFile.readText().trim()
-                                } else {
-                                    null
-                                }
-                            }
-                            val daysLeft = if (trialStart != null) 7 - java.time.temporal.ChronoUnit.DAYS.between(
-                                java.time.LocalDate.parse(trialStart),
-                                java.time.LocalDate.now()
-                            ).toInt() else 7
-                            val trialUsed = trialStartDate != null
-                            val trialActive = !licenseValid && trialStartDate != null && daysLeft > 0
-                            if (!trialActive) {
-                                Button(
-                                    onClick = {
-                                        if (!trialUsed) {
-                                            val today = java.time.LocalDate.now().toString()
-                                            LicenseManager.saveTrialStartDate(today)
-                                            trialStartDate = today
-                                            showLicenseDialog = false
-                                        }
-                                    },
-                                    enabled = !trialUsed,
-                                    modifier = Modifier.fillMaxWidth()
-                                ) { Text("No tengo licencia (Prueba 7 días)") }
-                            } else {
-                                Text("Prueba activa: $daysLeft días restantes", color = Color(0xFF00ADB5), fontWeight = FontWeight.Bold)
-                            }
+                // Definir trialUsed aquí para el scope correcto
+                val trialUsed = trialStartDate != null
+                LicenseDialog(
+                    licenseInput = licenseInput,
+                    onLicenseInputChange = { licenseInput = it },
+                    licenseError = licenseError,
+                    onActivate = {
+                        if (LicenseManager.validateKey(licenseInput)) {
+                            LicenseManager.saveLicenseKey(licenseInput)
+                            licenseValid = true
+                            showLicenseDialog = false
+                        } else {
+                            licenseError = "Clave inválida. Solicita una clave válida."
                         }
                     },
-                    confirmButton = {
-                        Button(onClick = {
-                            if (LicenseManager.validateKey(licenseInput)) {
-                                LicenseManager.saveLicenseKey(licenseInput)
-                                licenseValid = true
+                    onTrial = if (!trialActive) {
+                        {
+                            if (!trialUsed) {
+                                val today = java.time.LocalDate.now().toString()
+                                LicenseManager.saveTrialStartDate(today)
+                                trialStartDate = today
                                 showLicenseDialog = false
-                            } else {
-                                licenseError = "Clave inválida. Solicita una clave válida."
                             }
-                        }) { Text("Activar") }
-                    }
-                )
-            }
-
-            if (showTrialExpiredDialog) {
-                AlertDialog(
-                    onDismissRequest = {},
-                    title = { Text("Prueba expirada") },
-                    text = { Text("El periodo de prueba de 7 días ha expirado. Por favor, adquiere una licencia para continuar usando la aplicación.") },
-                    confirmButton = {
-                        Button(onClick = { System.exit(0) }) { Text("OK") }
-                    }
+                        }
+                    } else null,
+                    trialActive = trialActive,
+                    daysLeft = daysLeft,
+                    trialUsed = trialUsed
                 )
             }
         }

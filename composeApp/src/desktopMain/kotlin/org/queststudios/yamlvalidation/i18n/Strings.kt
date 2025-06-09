@@ -26,7 +26,24 @@ object Strings {
         "config.save" to "Guardar configuración",
         "config.close" to "Cerrar configuración",
         "config.title" to "Configuración",
-        "menu.language" to "Idioma"
+        "menu.language" to "Idioma",
+        "language.name" to "Español",
+        "license.status" to "Licencia",
+        "license.have" to "Tengo licencia",
+        "license.trial" to "No tengo licencia (Prueba 7 días)",
+        "license.title" to "Activación de licencia",
+        "license.intro" to "Introduce tu clave de licencia para activar el Validador YAML.",
+        "license.key" to "Clave de licencia",
+        "license.invalid" to "Clave inválida. Solicita una clave válida.",
+        "license.activate" to "Activar",
+        "license.trialActive" to "Prueba activa: {0} días restantes",
+        "trial.expired.title" to "Prueba expirada",
+        "trial.expired.text" to "El periodo de prueba de 7 días ha expirado. Por favor, adquiere una licencia para continuar usando la aplicación.",
+        "license.activated" to "✅ Licencia activada",
+        "license.notActivated" to "❎Licencia no activada",
+        "license.trialActive" to "⌛Prueba activa: {0} días restantes",
+        "license.activationError" to "Error al activar la licencia. Por favor, verifica tu clave.",
+        "license.trialUsed" to "Prueba ya utilizada. Por favor, adquiere una licencia para continuar."
     )
     val en = mapOf(
         "app.title" to "YAML Validator",
@@ -53,7 +70,23 @@ object Strings {
         "config.save" to "Save configuration",
         "config.close" to "Close configuration",
         "config.title" to "Configuration",
-        "menu.language" to "Language"
+        "menu.language" to "Language",
+        "language.name" to "English",
+        "license.status" to "License",
+        "license.have" to "I have a license",
+        "license.trial" to "No license (7-day trial)",
+        "license.title" to "License activation",
+        "license.intro" to "Enter your license key to activate YAML Validator.",
+        "license.key" to "License key",
+        "license.invalid" to "Invalid key. Please request a valid key.",
+        "license.activate" to "Activate",
+        "license.trialActive" to "⌛Trial active: {0} days left",
+        "trial.expired.title" to "Trial expired",
+        "trial.expired.text" to "The 7-day trial period has expired. Please purchase a license to continue using the application.",
+        "license.activated" to "✅ License activated",
+        "license.notActivated" to "❎ License not activated",
+        "license.activationError" to "Error activating license. Please check your key.",
+        "license.trialUsed" to "Trial already used. Please purchase a license to continue."
     )
     val ca = mapOf(
         "app.title" to "Validació YAML",
@@ -80,7 +113,23 @@ object Strings {
         "config.save" to "Desar configuració",
         "config.close" to "Tancar configuració",
         "config.title" to "Configuració",
-        "menu.language" to "Idioma"
+        "menu.language" to "Idioma",
+        "language.name" to "Català",
+        "license.status" to "Llicència",
+        "license.have" to "Tinc llicència",
+        "license.trial" to "No tinc llicència (Prova 7 dies)",
+        "license.title" to "Activació de llicència",
+        "license.intro" to "Introdueix la teva clau de llicència per activar el Validador YAML.",
+        "license.key" to "Clau de llicència",
+        "license.invalid" to "Clau invàlida. Sol·licita una clau vàlida.",
+        "license.activate" to "Activar",
+        "license.trialActive" to "⌛Prova activa: {0} dies restants",
+        "trial.expired.title" to "Prova expirada",
+        "trial.expired.text" to "El període de prova de 7 dies ha expirat. Si us plau, adquireix una llicència per continuar utilitzant l'aplicació.",
+        "license.activated" to "✅Llicència activada",
+        "license.notActivated" to "❎Llicència no activada",
+        "license.activationError" to "Error en activar la llicència. Si us plau, comprova la teva clau.",
+        "license.trialUsed" to "Prova ja utilitzada. Si us plau, adquireix una llicència per continuar."
     )
     fun get(lang: String, key: String): String {
         return when(lang) {
