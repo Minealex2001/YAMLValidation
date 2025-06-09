@@ -1,0 +1,857 @@
+openapi: 3.0.2
+info:
+  title: ServicingOrderCPC
+  description: ServicingOrder manages the orchestration of all necessary services so that customer service applications (CRM, Web and APP) can make calls to different backends and obtain the required data. Additionally, it will integrate all actions performed by operations teams that are currently executed in CORE systems, using CPC services such as Alfabetico, Prime, PyP, Tarjetas and Prestamos. / ServicingOrder gestiona la orquestación de todos los servicios necesarios para que las aplicaciones de atención al cliente (CRM, Web y APP) puedan realizar llamadas a diferentes backends y obtener los datos requeridos. Además, integrará todas las acciones realizadas por los equipos de operaciones que actualmente se ejecutan en los sistemas CORE, utilizando servicios CPC como Alfabetico, Prime, PyP, Tarjetas y Prestamos.
+  version: 1.0.0
+  termsOfService: http://swagger.io/terms/
+  contact:
+    name: ELENA GARCIA MAILLO
+    email: egarcia@caixabankpc.com
+    x-partner:
+      name: NTTData
+      email: nadiapatricia.arvezvillalba@emeal.nttdata.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  x-technology:
+    technology: Open Now
+  x-functional-domains:
+    company: caixabankPaymentsAndConsumer
+    business-area: caixabankPaymentsAndConsumer
+    domain: crossProductsAndServicesInfrastructures
+    subdomain: servicingOrder
+servers:
+  - url: http://localhost:3000
+tags:
+  - name: DynamicsCustomerManagementContracts
+    description: Dynamics 365 is a set of intelligent business applications that helps you run your entire business and deliver greater results through predictive, AI-driven insights. This tag groups endpoints that are based on the customer management contracts functionality.
+  - name: DynamicsCardsAuthorizations
+    description: Dynamics 365 is a set of intelligent business applications that helps you run your entire business and deliver greater results through predictive, AI-driven insights. This tag groups endpoints that are based on the cards authorizations functionality.
+  - name: DynamicsCardsIssuedCardsAdmin
+    description: Dynamics 365 is a set of intelligent business applications that helps you run your entire business and deliver greater results through predictive, AI-driven insights. This tag groups endpoints that are based on the issued cards administration functionality.
+  - name: DynamicsCardsCreditCards
+    description: Dynamics 365 is a set of intelligent business applications that helps you run your entire business and deliver greater results through predictive, AI-driven insights. This tag groups endpoints that are based on the credit cards functionality.
+paths:
+  /int/contracts/{contractId}/dueDays:
+    put:
+      summary: This endpoint allows changing the payment day of a contract.
+      description: This query is to Update the payment date of the account given the payment day.
+      operationId: internalUpdateContractDueDay
+      tags:
+        - DynamicsCardsCreditCards
+      x-absis-operation:
+        type: management
+        security: ServicingOrderCPC.internalUpdateContractDueDay
+      x-certification:
+        certification: C
+        objective: C
+        year: 2025
+      x-typology:
+        typology: external
+      parameters:
+        - name: contractId
+          in: path
+          description: Contract identifier to update the payment day.
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContractId'
+      requestBody:
+        $ref: '#/components/requestBodies/DueDayRequest'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          $ref:
+            'https://contractserver-micro-server-1.pro.int.srv.caixabank.com/resources/arch-global/v1/exceptions.yml#/components/responses/400'
+        '404':
+          $ref:
+            'https://contractserver-micro-server-1.pro.int.srv.caixabank.com/resources/arch-global/v1/exceptions.yml#/components/responses/404'
+        '500':
+          $ref:
+            'https://contractserver-micro-server-1.pro.int.srv.caixabank.com/resources/arch-global/v1/exceptions.yml#/components/responses/500'
+
+  /int/contracts/{contractId}/paymentModes:
+    put:
+      summary: Update Payment Modality of Account
+      description: This query is to Update the payment mode of the account given the payment Modality.
+      operationId: internalUpdatePaymentModality
+      tags:
+        - DynamicsCardsCreditCards
+      x-absis-operation:
+        type: management
+        security: ServicingOrderCPC.internalUpdatePaymentModality
+      x-certification:
+        certification: C
+        objective: C
+        year: 2025
+      x-typology:
+        typology: external
+      parameters:
+        - name: contractId
+          in: path
+          description: Contract identifier to update the payment modality.
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContractId'
+      requestBody:
+        $ref: '#/components/requestBodies/PaymentModalityRequest'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: |-
+            | Error code | Description |
+            | - | - |
+            | CROSSPRODUCTSANDSERVICESINFRASTR/BAD_REQUEST_FIXED_AMOUNT_LESS_THAN_ALLOWED | Fixed amount less than allowed. |
+            | CROSSPRODUCTSANDSERVICESINFRASTR/BAD_REQUEST_FIXED_AMOUNT_GREATER_THAN_ALLOWED | Fixed amount greater than allowed. |
+            | CROSSPRODUCTSANDSERVICESINFRASTR/BAD_REQUEST_PAYMENT_METHOD_REQUIRES_AMOUNT | Payment method requires amount. |
+          content:
+            application/json:
+              schema:
+                $ref: 'https://contractserver-micro-server-1.pro.int.srv.caixabank.com/resources/arch-global/v1/exceptions.yml#/components/schemas/AbsisException'
+        '404':
+          $ref:
+            'https://contractserver-micro-server-1.pro.int.srv.caixabank.com/resources/arch-global/v1/exceptions.yml#/components/responses/404'
+        '500':
+          $ref:
+            'https://contractserver-micro-server-1.pro.int.srv.caixabank.com/resources/arch-global/v1/exceptions.yml#/components/responses/500'
+
+  /int/contracts/{contractId}/deliveryMethods:
+    put:
+      summary: This endpoint allows updating the statement delivery method of a contract.
+      description: This endpoint allows updating the method of delivery of the statement of a contract, giving the contractID.
+      operationId: internalUpdateStatementDeliveryMethod
+      tags:
+        - DynamicsCustomerManagementContracts
+      x-absis-operation:
+        type: management
+        security: ServicingOrderCPC.internalUpdateStatementDeliveryMethod
+      x-certification:
+        certification: C
+        objective: C
+        year: 2025
+      x-typology:
+        typology: external
+      parameters:
+        - name: contractId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContractId'
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateStatementDeliveryMethodRequest'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          $ref:
+            'https://contractserver-micro-server-1.pro.int.srv.caixabank.com/resources/arch-global/v1/exceptions.yml#/components/responses/400'
+        '404':
+          $ref:
+            'https://contractserver-micro-server-1.pro.int.srv.caixabank.com/resources/arch-global/v1/exceptions.yml#/components/responses/404'
+        '500':
+          $ref:
+            'https://contractserver-micro-server-1.pro.int.srv.caixabank.com/resources/arch-global/v1/exceptions.yml#/components/responses/500'
+
+  /int/cards/{cardId}/status:
+    put:
+      summary: Endpoint that perfoms changes of status in PRIME.
+      description: Endpoint that changes card status in PRIME. The card status that the endpoint will modify are card cancellation, card block and unblock, and block and unblock freeze card. To do this, the action field will mark the status to be modified and, if it changes to blocking, the block code field will be indicated (in a enumeration). The endpoint must validate that the contract is in a normal situaction and that there is no outstanding debt.
+      operationId: internalCardStatusUpdate
+      tags:
+        - DynamicsCardsCreditCards
+      x-absis-operation:
+        type: management
+        security: ServicingOrderCPC.internalCardStatusUpdate
+      x-certification:
+        certification: A
+        objective: A
+        year: 2025
+      x-typology:
+        typology: external
+      parameters:
+        - in: path
+          name: cardId
+          description: Card identifier to update the status.
+          required: true
+          schema:
+            $ref: '#/components/schemas/CardId'
+      requestBody:
+        $ref: "#/components/requestBodies/CardStatusUpdateRequest"
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: |-
+            | Error code | Description |
+            | - | - |
+            | CROSSPRODUCTSANDSERVICESINFRASTR/BAD_REQUEST_CANCEL_WRONG_REASON | The selected reason is not associated with the selected status. |
+            | CROSSPRODUCTSANDSERVICESINFRASTR/BAD_REQUEST_BLOCK_UNBLOCK_WRONG_REASON | The selected reason is not associated with the selected status. |
+            | CROSSPRODUCTSANDSERVICESINFRASTR/BAD_REQUEST_CARD_RETURN_NOT_APPLICABLE | The status is different from CANCEL, therefore it does not allow indicating whether it has been recovered or not. |
+          content:
+            application/json:
+              schema:
+                $ref: 'https://contractserver-micro-server-1.pro.int.srv.caixabank.com/resources/arch-global/v1/exceptions.yml#/components/schemas/AbsisException'
+        '500':
+          $ref:
+            'https://contractserver-micro-server-1.pro.int.srv.caixabank.com/resources/arch-global/v1/exceptions.yml#/components/responses/500'
+
+  /int/contracts/{contractId}/creditLimits:
+    put:
+      summary: Endpoint that allows you to modify the credit limit of a card contract.
+      description: The service modifies the credit limit in a card that is associated with a specific contract.
+      operationId: internalUpdateContractLimit
+      tags:
+        - DynamicsCardsCreditCards
+      x-absis-operation:
+        type: management
+        security: ServicingOrderCPC.internalUpdateContractLimit
+      x-certification:
+        certification:
+        objective: A
+        year: 2025
+      x-typology:
+        typology: external
+      parameters:
+        - name: contractId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContractId'
+      requestBody:
+        $ref: "#/components/requestBodies/CreditLimitUpdateRequest"
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: |-
+            | Error code | Description |
+            | - | - |
+            | CROSSPRODUCTSANDSERVICESINFRASTR/BAD_REQUEST_MAX_CREDIT_LIMIT | The maximum limit is not possible because cannot exceed the creditLimit. |
+            | CROSSPRODUCTSANDSERVICESINFRASTR/BAD_REQUEST_MIN_CREDIT_LIMIT | The limit cannot be less than the minimum. |
+          content:
+            application/json:
+              schema:
+                $ref: 'https://contractserver-micro-server-1.pro.int.srv.caixabank.com/resources/arch-global/v1/exceptions.yml#/components/schemas/AbsisException'
+        '500':
+          $ref:
+            'https://contractserver-micro-server-1.pro.int.srv.caixabank.com/resources/arch-global/v1/exceptions.yml#/components/responses/500'
+
+  /int/cards/{cardId}/embossingNames:
+    put:
+      summary: Endpoint that performs changes of embossing name.
+      description: Endpoint that changes card embossing name. This endpoint will update the customer's name that is embossed on the physical card.
+      operationId: internalUpdateEmbossingName
+      tags:
+        - DynamicsCardsIssuedCardsAdmin
+      x-absis-operation:
+        type: management
+        security: ServicingOrderCPC.internalUpdateEmbossingName
+      x-certification:
+        certification:
+        objective: A
+        year: 2025
+      x-typology:
+        typology: external
+      parameters:
+        - in: path
+          name: cardId
+          description: Card identifier to update the embossingName.
+          required: true
+          schema:
+            $ref: '#/components/schemas/CardId'
+      requestBody:
+        $ref: "#/components/requestBodies/UpdateEmbossingNameRequest"
+      responses:
+        '204':
+          description: No Content
+        '400':
+          $ref:
+            'https://contractserver-micro-server-1.pro.int.srv.caixabank.com/resources/arch-global/v1/exceptions.yml#/components/responses/400'
+        '500':
+          $ref:
+            'https://contractserver-micro-server-1.pro.int.srv.caixabank.com/resources/arch-global/v1/exceptions.yml#/components/responses/500'
+
+  /int/cards/{cardId}/additionalEmbossing:
+    put:
+      summary: Allows updating card data stored.
+      description: Endpoint that allows update the card additional information. Currently, we will modify data specifically associated with the card stamping process.
+      operationId: internalUpdateAdditionalEmbossing
+      tags:
+        - DynamicsCardsIssuedCardsAdmin
+      x-absis-operation:
+        type: management
+        security: ServicingOrderCPC.internalUpdateAdditionalEmbossing
+      x-certification:
+        certification:
+        objective: A
+        year: 2025
+      x-typology:
+        typology: external
+      parameters:
+        - in: path
+          name: cardId
+          description: Card identifier to update the card additional information.
+          required: true
+          schema:
+            $ref: '#/components/schemas/CardId'
+      requestBody:
+        $ref: "#/components/requestBodies/AdditionalEmbossingRequest"
+      responses:
+        '204':
+          description: No Content
+        '400':
+          $ref:
+            'https://contractserver-micro-server-1.pro.int.srv.caixabank.com/resources/arch-global/v1/exceptions.yml#/components/responses/400'
+        '500':
+          $ref:
+            'https://contractserver-micro-server-1.pro.int.srv.caixabank.com/resources/arch-global/v1/exceptions.yml#/components/responses/500'
+
+  /int/contracts/{contractId}/cards:
+    post:
+      summary: Create a card information for a contract
+      description: This endpoint allows you to register a new card that is linked to an existing contract.
+      operationId: internalPostCard
+      tags:
+        - DynamicsCardsCreditCards
+      x-absis-operation:
+        type: management
+        security: ServicingOrderCPC.internalPostCard
+      x-certification:
+        certification:
+        objective: A
+        year: 2025
+      x-typology:
+        typology: external
+      parameters:
+        - name: contractId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContractId'
+      requestBody:
+        $ref: '#/components/requestBodies/CardRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardId'
+        '400':
+          $ref:
+            'https://contractserver-micro-server-1.pro.int.srv.caixabank.com/resources/arch-global/v1/exceptions.yml#/components/responses/400'
+        '500':
+          $ref:
+            'https://contractserver-micro-server-1.pro.int.srv.caixabank.com/resources/arch-global/v1/exceptions.yml#/components/responses/500'
+
+  /int/cards/installments/{installmentId}:
+    put:
+      summary: Updates the details of a specific installment payment for a card contract.
+      description: This endpoint allows you to update the information of a specific installment payment within a card contract.
+      operationId: internalUpdateCardInstallment
+      tags:
+        - DynamicsCardsCreditCards
+      x-absis-operation:
+        type: management
+        security: ServicingOrderCPC.internalUpdateCardInstallment
+      x-certification:
+        certification:
+        objective: A
+        year: 2025
+      x-typology:
+        typology: external
+      parameters:
+        - in: path
+          name: installmentId
+          description: Identifier for the cancellation and conversion to revolving.
+          required: true
+          schema:
+            $ref: '#/components/schemas/InstallmentId'
+      requestBody:
+        $ref: '#/components/requestBodies/InstallmentRequest'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: |-
+            | Error code | Description |
+            | - | - |
+            | CROSSPRODUCTSANDSERVICESINFRASTR/BAD_REQUEST_CANCEL_FRACTIONAL_TO_REVOLVING_CANNOT_BE_DONE | The installment operation's cancellation to revolving was not performed. |
+          content:
+            application/json:
+              schema:
+                $ref: 'https://contractserver-micro-server-1.pro.int.srv.caixabank.com/resources/arch-global/v1/exceptions.yml#/components/schemas/AbsisException'
+        '500':
+          $ref:
+            'https://contractserver-micro-server-1.pro.int.srv.caixabank.com/resources/arch-global/v1/exceptions.yml#/components/responses/500'
+
+  /int/cards/authorizations/{authorizationId}:
+    put:
+      summary: Endpoint that updates transactions information.
+      description: This endpoint manually releases a balance hold associated with an authorized but unconfirmed transaction. It requires the transaction identifier and is intended to be used in cases where the automatic release has not occurred.
+      operationId: internalUpdateCardAuthorization
+      tags:
+        - DynamicsCardsAuthorizations
+      x-absis-operation:
+        type: management
+        security: ServicingOrderCPC.internalUpdateCardAuthorization
+      x-certification:
+        certification:
+        objective: A
+        year: 2025
+      x-typology:
+        typology: external
+      parameters:
+        - in: path
+          name: authorizationId
+          description: identifier to update the authorizationId.
+          required: true
+          schema:
+            $ref: '#/components/schemas/AuthorizationId'
+      requestBody:
+        $ref: '#/components/requestBodies/AuthorizationRequest'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: |-
+            | Error code | Description |
+            | - | - |
+            | CROSSPRODUCTSANDSERVICESINFRASTR/BAD_REQUEST_AUTHORIZATION_IS_SINGLE_MESSAGE | The Authorization does not exist or can not be found. |
+            | CROSSPRODUCTSANDSERVICESINFRASTR/BAD_REQUEST_AUTHORIZATION_NOT_FOUND | The Authorization does not exist or can not be found. |
+            | CROSSPRODUCTSANDSERVICESINFRASTR/BAD_REQUEST_AUTHORIZATION_IS_NOT_PENDING_CONFIRMATION | The Authorization is not pending confirmation. |
+
+          content:
+            application/json:
+              schema:
+                $ref: 'https://contractserver-micro-server-1.pro.int.srv.caixabank.com/resources/arch-global/v1/exceptions.yml#/components/schemas/AbsisException'
+        '500':
+          $ref:
+            'https://contractserver-micro-server-1.pro.int.srv.caixabank.com/resources/arch-global/v1/exceptions.yml#/components/responses/500'
+
+  /int/contracts/{contractId}/insurancePacks/{insurancePackId}:
+    post:
+      summary: Creates an insurance policy associated with a credit card or loan contract.
+      description: Creates an insurance policy associated with a card or loan contract. For cards (CARDS), this will be done through a list of coverages with their respective data, which will be sent to the Cards domain. For loans (LOANS), this will be done through the PartyReferenceDirectory BIAN identifier of the insurance beneficiary, who may be the holder or co-holder of the contract. This data will be sent to the Insurances domain.
+      operationId: addInsurance
+      tags:
+        - DynamicsCustomerManagementContracts
+      x-absis-operation:
+        type: management
+        security: ServicingOrderCPC.addInsurance
+      x-certification:
+        certification:
+        objective: A
+        year: 2025
+      x-typology:
+        typology: external
+      parameters:
+        - name: contractId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContractId'
+        - name: insurancePackId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/InsurancePackId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BaseInsuranceData'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsuranceId'
+        '400':
+          $ref:
+            'https://contractserver-micro-server-1.pro.int.srv.caixabank.com/resources/arch-global/v1/exceptions.yml#/components/responses/400'
+        '500':
+          $ref:
+            'https://contractserver-micro-server-1.pro.int.srv.caixabank.com/resources/arch-global/v1/exceptions.yml#/components/responses/500'
+components:
+  requestBodies:
+    DueDayRequest:
+      required: true
+      description: This schema contains the information to change the payment day.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DueDayRequest'
+    UpdateStatementDeliveryMethodRequest:
+      required: true
+      description: Represents the necessary data to send a statement mail to a customer by their contractID.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateStatementDeliveryMethodRequest'
+    PaymentModalityRequest:
+      required: true
+      description: This schema contains the information to change de payment modality.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PaymentModalityRequest'
+    CardStatusUpdateRequest:
+      required: true
+      description: Allows update the card lifecycle status by the given cardId.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CardStatusUpdateRequest'
+    CreditLimitUpdateRequest:
+      required: true
+      description: This schema contains the information to change the credit limit by the given contractId.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreditLimitUpdate'
+    UpdateEmbossingNameRequest:
+      required: true
+      description: Request to change the customer's embossing name on the physical card.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateEmbossingName'
+    AdditionalEmbossingRequest:
+      required: true
+      description: Request that allows you to incorporate additional information that goes on the fourth line of the card.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AdditionalEmbossing'
+    CardRequest:
+      required: true
+      description: Object that contains the information of the card to be created. These attributes are used to create the card information for a specific contract.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CorporateId'
+    InstallmentRequest:
+      required: true
+      description: Object that contains the information to cancel the fractioning of an operation by transferring all the outstanding amount to the revolving debt of the contract.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Installment'
+    AuthorizationRequest:
+      required: true
+      description: Object that contains the information to release an authorization. An authorized but unconfirmed transaction is an operation that has been initially approved by the system but has not yet been finalized or definitively recorded. This means that, although the corresponding amount has been reserved, the transaction is still pending final confirmation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Authorization'
+  schemas:
+
+    # Responses
+    #Due Day Modify (updateContarctDueDay) schemas
+    DueDayRequest:
+      required:
+        - newDueDay
+      type: object
+      description: This schema contains the information to change the payment day.
+      properties:
+        newDueDay:
+          $ref: '#/components/schemas/DueDayEnum'
+    DueDayEnum:
+      type: string
+      description: |-
+        | New payment due date | Description |
+        | - | - |
+        | DAY_5 | The payment is due on the 5th of the month. |
+        | DAY_10 | The payment is due on the 10th of the month. |
+        | DAY_15 | The payment is due on the 15th of the month. |
+        | DAY_20 | The payment is due on the 20th of the month. |
+        | DAY_25 | The payment is due on the 25th of the month. |
+        | DAY_30 | The payment is due on the last day of the month. |
+      enum: [ DAY_5, DAY_10, DAY_15, DAY_20, DAY_25, DAY_30 ]
+      example: 'DAY_5'
+    #Payment Modality Modify (updatePaymentModality) schemas
+    PaymentModalityRequest:
+      required:
+        - paymentModality
+      type: object
+      description: This schema contains the information to change de payment modality.
+      properties:
+        paymentModality:
+          $ref: '#/components/schemas/PaymentModalityEnum'
+        fixedAmount:
+          type: number
+          format: decimal
+          description: "Amount to pay with Payment Modality"
+          maximum: 99999999999999
+          minimum: 1
+          example: 7
+    PaymentModalityEnum:
+      type: string
+      description: |-
+        | Payment Modality Modality | Description |
+        | - | - |
+        | TOTAL_PAYMENT | For payment at the end of the month |
+        | REVOLVING_PAYMENT | For a fixed amount |
+      enum: [ TOTAL_PAYMENT, REVOLVING_PAYMENT ]
+      example: 'REVOLVING_PAYMENT'
+    #Statement Delivery Method Modify (updateStatementDeliveryMethod) schemas
+    UpdateStatementDeliveryMethodRequest:
+      type: object
+      description: Represents the necessary data to send a statement mail to a customer by their NIF.
+      properties:
+        method:
+          $ref: '#/components/schemas/PropertiesEnum'
+      required:
+        - method
+    PropertiesEnum:
+      type: string
+      description: |-
+        | Statement Delivery Method | Description |
+        | - | - |
+        | POSTAL | Statement delivery by postal mail |
+        | ONLINE | Statement delivery by email |
+      enum: [ POSTAL, ONLINE ]
+      example: 'POSTAL'
+    #Card Status Modify (cardStatusUpdate) schemas
+    CardStatusUpdateRequest:
+      description: Allows update the card lifecycle status by the given cardId.
+      properties:
+        status:
+          $ref: '#/components/schemas/CardStatusEnum'
+        reason:
+          $ref: '#/components/schemas/CardReasonEnum'
+        isRecoveredCard:
+          type: boolean
+          description: 'Recovered card indicator. Possible values: S=TRUE/N=FALSE. This indicator can only be reported for the cancel reasons BSER or BDET.'
+          example: true
+      required:
+        - status
+        - reason
+    #Card embossing name Modify (internalUpdateEmbossingName) schemas
+    UpdateEmbossingName:
+      description: Request to change the customer's embossing name on their physical card.
+      properties:
+        embossingName:
+          $ref: '#/components/schemas/CardEmbossingName'
+      required:
+        - embossingName
+    #Installment Modify schemas
+    Installment:
+      description: Request to modify the details of the installment payment plan.
+      properties:
+        action:
+          $ref: '#/components/schemas/InstallmentActionEnum'
+      required:
+        - action
+    InstallmentActionEnum:
+      type: string
+      description: |
+        Action to do in change status endpoint. The below table describes the different options
+        | Type                   | Description                              |
+        | -----------------------|----------------------------------------- |
+        | TO_REVOLVING           | Revolving payment method for the specified installment                 |
+      enum: [ TO_REVOLVING ]
+      example: 'TO_REVOLVING'
+    #Authorization Modify schemas
+    Authorization:
+      description: Request to update the information and details of the authorization.
+      properties:
+        action:
+          $ref: '#/components/schemas/AuthorizationActionEnum'
+      required:
+        - action
+    AuthorizationActionEnum:
+      type: string
+      description: |
+        Action to do in change status endpoint. The below table describes the different options
+        | Type                   | Description                              |
+        | -----------------------|----------------------------------------- |
+        | DROP           | The DROP action is used to manually release a hold on funds associated with an authorized but unconfirmed transaction                 |
+      enum: [ DROP ]
+      example: 'DROP'
+    #GENERAL SCHEMAS for Contracts
+    ContractId:
+      type: string
+      description: Internal BIAN domain identifier for the CreditCard. This is a technical identifier used to query and modify a card contract data. It is always transmitted externally in encrypted form and is never displayed in plain text on the user's screen.
+      example: "eyJ0eXAiOiJKV1QiLCJ2ZXJzaW9uIjoxLCJhbGciOiJIUzI1NiIsImtpZCI6Im5hdmlnYXRpb24tYWJzaXMtc2lnbi10ZW1wbGF0ZToxIn0"
+      x-absis-metadata:
+        type: "contractId"
+        properties:
+          - name: "integrity"
+            value: "encrypted"
+
+    #GENERAL SCHEMAS for Cards
+    CorporateId:
+      description: "BIAN domain identifier, Party Reference Data Directory. This ID is used within this service to retrieve customer data and information. Note: It's always transmitted externally in an encrypted form."
+      type: string
+      format: corporateId
+      example: "eyJ0eXAiOiJKV1QiLCJ2ZXJzaW9uIjoxLCJhbGciOiJIUzI1NiIsImtpZCI6Im5hdmlnYXRpb24tYWJzaXMtc2lnbi10ZW1wbGF0ZToxIn0"
+      x-absis-metadata:
+        type: "customerInternalId"
+        properties:
+          - name: "integrity"
+            value: "encrypted"
+    CardId:
+      type: string
+      description: Internal BIAN domain identifier for the CreditCard. This is a technical identifier used to query and modify a card data. It is always transmitted externally in encrypted form and is never displayed in plain text on the user's screen.
+      example: "eyJ0eXAiOiJKV1QiLCJ2ZXJzaW9uIjoxLCJhbGciOiJIUzI1NiIsImtpZCI6Im5hdmlnYXRpb24tYWJzaXMtc2lnbi10ZW1wbGF0ZToxIn0"
+      x-absis-metadata:
+        type: "cardId"
+        properties:
+          - name: "integrity"
+            value: "encrypted"
+    InstallmentId:
+      type: string
+      description: Internal BIAN domain identifier for the  CreditCard. This is a technical identifier used to query an installment data. It is always transmitted externally in encrypted form and is never displayed in plain text on the user's screen.
+      example: "eyJ0eXAiOiJKV1QiLCJ2ZXJzaW9uIjoxLCJhbGciOiJIUzI1NiIsImtpZCI6Im5hdmlnYXRpb24tYWJzaXMtc2lnbi10ZW1wbGF0ZToxIn0"
+      x-absis-metadata:
+        type: "installmentId"
+        properties:
+          - name: "integrity"
+            value: "encrypted"
+    AuthorizationId:
+      type: string
+      description: Internal BIAN domain identifier for the  CardAutorization. This is a technical identifier used to query an authorization data. It is always transmitted externally in encrypted form and is never displayed in plain text on the user's screen.
+      example: "eyJ0eXAiOiJKV1QiLCJ2ZXJzaW9uIjoxLCJhbGciOiJIUzI1NiIsImtpZCI6Im5hdmlnYXRpb24tYWJzaXMtc2lnbi10ZW1wbGF0ZToxIn0"
+      x-absis-metadata:
+        type: "transactionId"
+        properties:
+          - name: "integrity"
+            value: "encrypted"
+    CardStatusEnum:
+      type: string
+      description: |
+        Action to do in change status endpoint. The below table describes the different options
+        | Type                   | Description                              |
+        | -----------------------|----------------------------------------- |
+        | CANCEL                 | Card cancellation action                 |
+        | BLOCK                  | Temporary card blocking action           |
+        | UNBLOCK                | Temporary card unlock action             |
+      enum: [ CANCEL, BLOCK, UNBLOCK ]
+      example: 'CANCEL'
+    CardReasonEnum:
+      type: string
+      description: |
+        Caixabank cancel code stored in PyP, only applies if the selected action is Cancellation. Endpoint will translate into PRIME block code. The below table describes the different options
+        | Type    | Description                                                |
+        | --------|----------------------------------------------------        |
+        | LOST    | Cancellation due to loss of card. Allow substitutions. It does not allow                renewals or manual renewals. It implies black lists.       |
+        | THEFT    | Cancellation due to card theft. Allow substitutions. It does not allow                  renewals or manual renewals. It implies black lists.       |
+        | COMPROMISED    | Cancellation due to compromised card. It comes from a previous precautionary            blocking of a compromised card. It involves blacklists.    |
+        | SERVICE_DEACTIVATION    | Cancellation due to loss of service. It does not allow substitutions, renewals           , or manual renewals. The customer does not want the card. |
+        | DEACTIVATION_DUE_TO_DAMAGED    | Dismissal due to deterioration. Allow substitutions.       |
+        | ADMISSION_FRAUD    | Reversible Admission Fraud. It does not allow           substitutions, renewals, or manual renewals. |                         
+        | POST_SALE    | After Sales. It does not allow substitutions, renewals, or manual renewals.                         |
+        | FROZEN    | Frozen card                                           |
+      enum: [ LOST, THEFT, COMPROMISED, SERVICE_DEACTIVATION, DEACTIVATION_DUE_TO_DAMAGED, ADMISSION_FRAUD, POST_SALE, FROZEN ]
+      example: 'LOST'
+    #Contract Limit (putContractLimit) schemas
+    CreditLimitUpdate:
+      required:
+        - newLimit
+      type: object
+      description: This schema contains the information to change credit limit of a contract.
+      properties:
+        newLimit:
+          $ref: '#/components/schemas/NewLimit'
+
+    NewLimit:
+      type: number
+      format: decimal
+      description: "New customer contract credit limit available for purchases and other transactions"
+      minimum: 1
+      example: 1500
+
+    CardEmbossingName:
+      type: string
+      minLength: 1
+      maxLength: 27
+      pattern: "^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]*$"
+      description: Customer's name embossed prominently on the front side of the physical card.
+      example: "SUSANA ABAD LOPEZ"
+    AdditionalEmbossing:
+      type: string
+      minLength: 1
+      maxLength: 27
+      description: Additional information for the fourth line of the card, which could include membership number for MediaMarkt and FNAC products.
+      example: "2312"
+    InsurancePackId:
+      type: string
+      description: Internal BIAN domain identifier for the InsuranceCPC. This is a technical identifier used to query and modify a insurance pack data. It is always transmitted externally in encrypted form and is never displayed in plain text on the user's screen.
+      example: "eyJ0eXAiOiJKV1QiLCJ2ZXJzaW9uIjoxLCJhbGciOiJIUzI1NiIsImtpZCI6Im5hdmlnYXRpb24tYWJzaXMtc2lnbi10ZW1wbGF0ZToxIn0"
+      x-absis-metadata:
+        type: "insurancePackId"
+        properties:
+          - name: "integrity"
+            value: "encrypted"
+
+    BaseInsuranceData:
+      type: object
+      description: Object that contains the information of the insurance to be created. These attributes are used to create the insurance information for a specific contract.
+      properties:
+        contractType:
+          type: string
+          description: |-
+            | Type of contract on which the insurance will be taken out | Description |
+            | - | - |
+            | CARD | Insurance on a card contract. |
+            | LOAN | Insurance on a loan contract. |
+          enum: [ CARD, LOAN ]
+          example: 'CARD'
+      required:
+        - contractType
+      discriminator:
+        propertyName: contractType
+        mapping:
+          LOAN: '#/components/schemas/InsuranceLoan'
+    InsuranceLoan:
+      description: Insurance loan data section of the contract that extends the BaseInsuranceData according to the value of the contract type.
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/BaseInsuranceData'
+      properties:
+        corporateId:
+          $ref: '#/components/schemas/CorporateId'
+        role:
+          type: string
+          description: |
+            Type of role in the contract.
+            | Type                   | Description                              |
+            | -----------------------|----------------------------------------- |
+            | HOLDER                 | Main owner                               |
+            | COHOLDER               | Co-owner                                 |
+          enum: [ HOLDER, COHOLDER ]
+          example: 'HOLDER'
+        effectiveDate:
+          type: string
+          format: date
+          description: Effective date of the insurance.
+          example: "2023-10-15"
+        loanAmount:
+          type: number
+          format: decimal
+          description: Amount of the loan associated with the insurance.
+          example: 10000
+        installmentNumbers:
+          type: integer
+          description: Number of installments for the loan.
+          example: 12
+      required:
+        - corporateId
+        - role
+        - effectiveDate
+        - loanAmount
+        - installmentNumbers
+    InsuranceId:
+      type: string
+      description: Internal BIAN domain identifier for the Insurance. This is a technical identifier used to query and modify a insurance data. It is always transmitted externally in encrypted form and is never displayed in plain text on the user's screen.
+      example: "eyJ0eXAiOiJKV1QiLCJ2ZXJzaW9uIjoxLCJhbGciOiJIUzI1NiIsImtpZCI6Im5hdmlnYXRpb24tYWJzaXMtc2lnbi10ZW1wbGF0ZToxIn0"
+      x-absis-metadata:
+        type: "insuranceId"
+        properties:
+          - name: "integrity"
+            value: "encrypted"
