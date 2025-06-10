@@ -148,7 +148,7 @@ class ValidatorCore(
             val endpointObj = paths[endpoint] as? Map<*, *> ?: continue
             for (method in endpointObj.keys) {
                 val methodObj = endpointObj[method] as? Map<*, *> ?: continue
-                val context = ValidationContext(yamlPath, yamlData)
+                val context = ValidationContext(yamlData)
                 for (rule in rules) {
                     rule.validate(endpoint.toString(), method.toString(), context, object : ValidationLogger {
                         override fun log(level: String, message: String) {
@@ -172,7 +172,7 @@ class ValidatorCore(
             val endpointObj = paths[endpoint] as? Map<*, *> ?: continue
             for (method in endpointObj.keys) {
                 val methodObj = endpointObj[method] as? Map<*, *> ?: continue
-                val context = ValidationContext(yamlPath, yamlData)
+                val context = ValidationContext(yamlData)
                 for (rule in rules) {
                     rule.validate(endpoint.toString(), method.toString(), context, object : ValidationLogger {
                         override fun log(level: String, message: String) {
