@@ -17,13 +17,13 @@ class CertificationValidation : ValidationRule {
             val certification = certBlock["certification"]?.toString() ?: ""
             val objective = certBlock["objective"]?.toString() ?: ""
             val year = certBlock["year"]?.toString() ?: ""
-            if (certification.isNotEmpty() && certification == "A") {
+            if (certification.isNotEmpty() && certification == "A" || certification == "B" || certification == "C") {
                 logger.log("WARNING", "x-certification.certification tiene el valor 'A'. Debería estar vacío si es la primera vez que se presenta a API Team CXB.")
             }
             if (objective != "A") {
-                logger.log("ERROR", "x-certification.objective debería ser 'A' la primera vez que se presenta. Valor actual: $objective")
+                logger.log("INFO", "x-certification.objective debería ser 'A' la primera vez que se presenta. Valor actual: $objective")
             } else {
-                logger.log("INFO", "Validación exitosa: x-certification.objective es 'A'.")
+                logger.log("INFO", "Validación exitosa: x-certification.objective es '$objective'.")
             }
             if (year != "2025") {
                 logger.log("ERROR", "x-certification.year no es '2025': $year")

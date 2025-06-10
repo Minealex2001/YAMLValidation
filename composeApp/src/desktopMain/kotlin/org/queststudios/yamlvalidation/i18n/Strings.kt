@@ -3,7 +3,7 @@ package org.queststudios.yamlvalidation.i18n
 object Strings {
     val es = mapOf(
         "app.title" to "Validador YAML",
-        "file.label" to "Archivo YAML:",
+        "file.label" to "Archivo YAML",
         "file.open" to "Seleccionar YAML",
         "validate.button" to "Validar YAML",
         "export.spectral" to "Exportar resultado Spectral a archivo",
@@ -45,11 +45,18 @@ object Strings {
         "license.trialUsed" to "Prueba ya utilizada. Por favor, adquiere una licencia para continuar.",
         "validation_log_file_write_error" to "Error al escribir en el archivo de registro de validación",
         "validation_yaml_file_not_found" to "Archivo YAML no encontrado",
-        "validation_yaml_missing_paths" to "El archivo YAML debe contener la clave 'paths' para ser válido"
+        "validation_yaml_missing_paths" to "El archivo YAML debe contener la clave 'paths' para ser válido",
+        "spectral.export.success" to "Resultado Spectral exportado correctamente.",
+        "ok" to "OK",
+        "config.changelog" to "Ver Changelog",
+        "spectral.askPath" to "¿Deseas indicar la ruta de Spectral para ejecutar la validación?",
+        "spectral.btnSetPath" to "Especificar ruta",
+        "spectral.btnSkip" to "No",
+        "spectral.btnDontShow" to "No volver a mostrar"
     )
     val en = mapOf(
         "app.title" to "YAML Validator",
-        "file.label" to "YAML file:",
+        "file.label" to "YAML file",
         "file.open" to "Open YAML",
         "validate.button" to "Validate YAML",
         "export.spectral" to "Export Spectral result to file",
@@ -91,11 +98,18 @@ object Strings {
         "license.trialUsed" to "Trial already used. Please purchase a license to continue.",
         "validation_log_file_write_error" to "Error writing validation log file",
         "validation_yaml_file_not_found" to "YAML file not found",
-        "validation_yaml_missing_paths" to "The YAML file must contain the 'paths' key to be valid"
+        "validation_yaml_missing_paths" to "The YAML file must contain the 'paths' key to be valid",
+        "spectral.export.success" to "Spectral result exported successfully.",
+        "ok" to "OK",
+        "config.changelog" to "View Changelog",
+        "spectral.askPath" to "Do you want to specify the Spectral path to run the validation?",
+        "spectral.btnSetPath" to "Set path",
+        "spectral.btnSkip" to "No",
+        "spectral.btnDontShow" to "Don't show again"
     )
     val ca = mapOf(
         "app.title" to "Validació YAML",
-        "file.label" to "Fitxer YAML:",
+        "file.label" to "Fitxer YAML",
         "file.open" to "Obrir YAML",
         "validate.button" to "Validar YAML",
         "export.spectral" to "Exporta el resultat de Spectral a un fitxer",
@@ -137,7 +151,14 @@ object Strings {
         "license.trialUsed" to "Prova ja utilitzada. Si us plau, adquireix una llicència per continuar.",
         "validation_log_file_write_error" to "Error al escriure al fitxer de registre de validació",
         "validation_yaml_file_not_found" to "Fitxer YAML no trobat",
-        "validation_yaml_missing_paths" to "El fitxer YAML ha de contenir la clau 'paths' per ser vàlid"
+        "validation_yaml_missing_paths" to "El fitxer YAML ha de contenir la clau 'paths' per ser vàlid",
+        "spectral.export.success" to "Resultat de Spectral exportat correctament.",
+        "ok" to "D'acord",
+        "config.changelog" to "Veure Changelog",
+        "spectral.askPath" to "Vols indicar la ruta de Spectral per executar la validació?",
+        "spectral.btnSetPath" to "Especificar ruta",
+        "spectral.btnSkip" to "No",
+        "spectral.btnDontShow" to "No tornar a mostrar"
     )
     fun get(lang: String, key: String): String {
         return when(lang) {

@@ -8,8 +8,12 @@ plugins {
 }
 
 kotlin {
-    jvm("desktop")
-    
+    jvm("desktop") {
+        compilations.all {
+            kotlinOptions.jvmTarget = "17"
+        }
+    }
+
     sourceSets {
         val desktopMain by getting
         
@@ -27,6 +31,7 @@ kotlin {
             implementation(libs.kotlin.test)
         }
         desktopMain.dependencies {
+
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
             // YAML parser
@@ -34,6 +39,9 @@ kotlin {
             // Compose FileDialog y recursos multiplataforma
             implementation("org.jetbrains.compose.components:components-resources-desktop:1.6.10")
             implementation("org.jetbrains.compose.components:components-splitpane-desktop:1.6.10")
+            // implementation("androidx.compose.ui:ui-text-markdown:1.6.10")
+            // Markdown Compose de Mike Penz (compatible Desktop)
+            //implementation("com.github.jeziellago:compose-markdown:{LAST-RELEASE}")
         }
     }
 }

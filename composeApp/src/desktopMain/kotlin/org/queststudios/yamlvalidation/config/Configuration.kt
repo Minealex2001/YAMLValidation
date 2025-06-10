@@ -10,10 +10,13 @@ class Configuration {
     private val configFile = configDir + File.separator + "configuracion.properties"
     private val spectralPathKey = "spectralPath"
     private val languageKey = "language"
+    private val dontShowSpectralDialogKey = "dontShowSpectralDialog"
 
     var spectralPath: String = ""
         private set
     var language: String = "es"
+        private set
+    var dontShowSpectralDialog: Boolean = false
         private set
 
     init {
@@ -30,13 +33,16 @@ class Configuration {
                 FileInputStream(file).use { fis -> props.load(fis) }
                 spectralPath = props.getProperty(spectralPathKey, "")
                 language = props.getProperty(languageKey, "es")
+                dontShowSpectralDialog = props.getProperty(dontShowSpectralDialogKey, "false").toBoolean()
             } else {
                 spectralPath = ""
                 language = "es"
+                dontShowSpectralDialog = false
             }
         } catch (_: Exception) {
             spectralPath = ""
             language = "es"
+            dontShowSpectralDialog = false
         }
     }
 
@@ -52,11 +58,17 @@ class Configuration {
         saveConfig()
     }
 
+    fun setDontShowSpectralDialog(value: Boolean) {
+        dontShowSpectralDialog = value
+        saveConfig()
+    }
+
     private fun saveConfig() {
         try {
             val props = Properties()
             props.setProperty(spectralPathKey, spectralPath)
             props.setProperty(languageKey, language)
+            props.setProperty(dontShowSpectralDialogKey, dontShowSpectralDialog.toString())
             val dir = File(configDir)
             if (!dir.exists()) dir.mkdirs()
             FileOutputStream(configFile).use { fos -> props.store(fos, "Configuración Validador YAML") }
