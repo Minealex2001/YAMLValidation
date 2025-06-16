@@ -1,4 +1,10 @@
 # Changelog
+## [1.0.2] - 2025-06-16
+### Mejoras
+- Mejorados las pantallas y consistencias entre ellas.
+- Mejorada el tema y paletas de colores
+### Soluciones
+- Ahora el comando de spectral cierra siempre el terminal. [!1](https://github.com/Minealex2001/YAMLValidation/issues/1)
 ## [1.0.1.1] - 2025-06-10
 ### Soluciones
 - Ahora el changelog está en formato es scrollable.
