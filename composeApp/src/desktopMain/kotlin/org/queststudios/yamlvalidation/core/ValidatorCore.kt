@@ -148,6 +148,7 @@ class ValidatorCore(
             process.waitFor()
             logger.log("SPECTRAL", output)
             logToFile("SPECTRAL", output)
+            process.destroy()
             return ValidationResult(true)
         } catch (e: Exception) {
             val msg = "Error ejecutando Spectral export: ${e.message}\n${e.stackTraceToString()}"
