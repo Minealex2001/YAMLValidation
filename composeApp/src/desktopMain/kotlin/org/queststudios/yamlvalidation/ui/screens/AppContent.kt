@@ -4,28 +4,26 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
+import org.queststudios.yamlvalidation.ui.ExpressiveTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import org.queststudios.yamlvalidation.ui.footers.AppFooter
 import org.queststudios.yamlvalidation.ErrorBanner
 import org.queststudios.yamlvalidation.MainCard
 import org.queststudios.yamlvalidation.ResultsTabs
-import org.queststudios.yamlvalidation.ui.containers.AppContainer
 import org.queststudios.yamlvalidation.config.Configuration
 import org.queststudios.yamlvalidation.core.ValidatorCore
 import org.queststudios.yamlvalidation.i18n.Strings
 import org.queststudios.yamlvalidation.licensing.LicenseManager
+import org.queststudios.yamlvalidation.ui.containers.AppContainer
 import org.queststudios.yamlvalidation.ui.dialogs.ConfigDialog
 import org.queststudios.yamlvalidation.ui.dialogs.LicenseDialog
+import org.queststudios.yamlvalidation.ui.footers.AppFooter
 import org.queststudios.yamlvalidation.validation.ComposeValidationLogger
 import org.queststudios.yamlvalidation.validation.impl.*
 import org.yaml.snakeyaml.Yaml
@@ -38,7 +36,6 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import javax.swing.JFileChooser
 import javax.swing.filechooser.FileNameExtensionFilter
-import kotlin.system.exitProcess
 
 /**
  * Este archivo orquesta la composición principal de la app, importando los componentes modulares.
@@ -82,7 +79,7 @@ fun AppContent() {
     var yamlFile = if (yamlPath.isNotBlank()) File(yamlPath) else null
     var pendingOpenLicenseDialog by remember { mutableStateOf(false) }
 
-    MaterialTheme {
+    ExpressiveTheme {
         AppContainer {
             // Siempre renderizar la app, y mostrar el LicenseDialog como overlay si corresponde
             val rules = remember {

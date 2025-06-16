@@ -6,13 +6,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.background
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.padding
 
 @Composable
 fun AppContainer(content: @Composable () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF222831))
+            .background(MaterialTheme.colorScheme.background)
+            .padding(0.dp)
     ) {
         content()
     }

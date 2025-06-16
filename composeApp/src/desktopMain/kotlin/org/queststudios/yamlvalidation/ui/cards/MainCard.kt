@@ -13,6 +13,7 @@ import org.queststudios.yamlvalidation.validation.ComposeValidationLogger
 import org.queststudios.yamlvalidation.core.ValidatorCore
 import org.queststudios.yamlvalidation.i18n.Strings
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.shadow
 
 @Composable
 fun MainCard(
@@ -33,50 +34,73 @@ fun MainCard(
     Strings: Strings
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
-        elevation = CardDefaults.cardElevation(8.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF393E46))
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .shadow(12.dp, RoundedCornerShape(28.dp)),
+        shape = RoundedCornerShape(28.dp),
+        elevation = CardDefaults.cardElevation(12.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(
-            modifier = Modifier.padding(32.dp),
+            modifier = Modifier.padding(40.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 Strings.get(language, "app.title"),
-                style = MaterialTheme.typography.headlineMedium,
-                color = Color(0xFF00ADB5),
+                style = MaterialTheme.typography.displaySmall,
+                color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center
             )
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(24.dp))
             OutlinedTextField(
                 value = yamlPath,
                 onValueChange = onYamlPathChange,
-                label = { Text(Strings.get(language, "file.label"), color = Color.White) },
+                label = { Text(Strings.get(language, "file.label"), color = MaterialTheme.colorScheme.onSurface) },
                 modifier = Modifier.fillMaxWidth(),
-                textStyle = LocalTextStyle.current.copy(color = Color.White),
+                textStyle = LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.onSurface),
                 trailingIcon = {
-                    Button(onClick = onYamlChooser) { Text(Strings.get(language, "file.open")) }
-                }
+                    Button(
+                        onClick = onYamlChooser,
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+                    ) { Text(Strings.get(language, "file.open"), color = MaterialTheme.colorScheme.onSecondaryContainer) }
+                },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                    cursorColor = MaterialTheme.colorScheme.primary
+                )
             )
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(16.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Button(onClick = onValidate) {
-                    Text(Strings.get(language, "validate.button"))
+                Button(
+                    onClick = onValidate,
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                ) {
+                    Text(Strings.get(language, "validate.button"), color = MaterialTheme.colorScheme.onPrimary)
                 }
-                Button(onClick = onSpectral) {
-                    Text(Strings.get(language, "export.spectral"))
+                Button(
+                    onClick = onSpectral,
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)
+                ) {
+                    Text(Strings.get(language, "export.spectral"), color = MaterialTheme.colorScheme.onTertiary)
                 }
-                Button(onClick = onExport) {
-                    Text(Strings.get(language, "output.export"))
+                Button(
+                    onClick = onExport,
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
+                ) {
+                    Text(Strings.get(language, "output.export"), color = MaterialTheme.colorScheme.onSecondary)
                 }
-                Button(onClick = onConfig) {
-                    Text(Strings.get(language, "config.open"))
+                Button(
+                    onClick = onConfig,
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                ) {
+                    Text(Strings.get(language, "config.open"), color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         }
