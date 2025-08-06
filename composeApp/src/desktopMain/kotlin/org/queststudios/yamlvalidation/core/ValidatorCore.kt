@@ -50,6 +50,12 @@ class ValidatorCore(
     fun getLogHistory(): List<String> = logHistory.toList()
 
     fun loadYaml(): ValidationResult {
+        if (yamlPath.isBlank()) {
+            val msg = Strings.get(language, "error.noYaml")
+            log("ERROR", msg)
+            yamlData = emptyMap()
+            return ValidationResult(false, msg)
+        }
         try {
             val input = File(yamlPath)
             if (!input.exists() || !input.isFile) {
@@ -93,10 +99,23 @@ class ValidatorCore(
     }
 
     private fun runSpectralValidationOutput(): String {
+        // 1. Leer el YAML y modificar el campo 'info.title' temporalmente
+        val yamlFile = File(yamlPath)
+        val yamlText = yamlFile.readText()
+        val yaml = org.yaml.snakeyaml.Yaml()
+        val yamlData: MutableMap<String, Any?> = yaml.load(yamlText) as? MutableMap<String, Any?> ?: return "No se pudo leer el YAML."
+        val info = yamlData["info"] as? MutableMap<String, Any?>
+        val originalTitle = info?.get("title")?.toString()
+        if (info != null) {
+            info["title"] = "TemporalSpectralName"
+        }
+        // 2. Guardar el YAML modificado en un archivo temporal
+        val tempFile = File.createTempFile("spectral_temp", ".yaml")
+        tempFile.writeText(org.yaml.snakeyaml.Yaml().dump(yamlData))
         try {
             val spectralCmd = listOf(
                 "cmd", "/c",
-                "spectral lint -r ./poc/.spectral_v2.yaml -f pretty \"$yamlPath\""
+                "spectral lint -r ./poc/.spectral_v2.yaml -f pretty \"${tempFile.absolutePath}\""
             )
             val processBuilder = ProcessBuilder(spectralCmd)
             val spectralDir = spectralPath?.takeIf { it.isNotBlank() }?.let { File(it) } ?: File(System.getProperty("user.dir"))
@@ -109,6 +128,8 @@ class ValidatorCore(
             return output
         } catch (e: Exception) {
             return "Error ejecutando Spectral: ${e.message}\n${e.stackTraceToString()}"
+        } finally {
+            tempFile.delete()
         }
     }
 

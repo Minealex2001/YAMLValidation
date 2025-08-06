@@ -1,4 +1,16 @@
 # Changelog
+## [1.1.0] - 2025-08-06
+### Funcionalidades
+- Validación de tipo 'informational' en POST cuando el path termina en /request.
+- Validación de año en x-certification.year para aceptar cualquier año de 4 dígitos.
+- Al validar con Spectral sin exportar, el nombre se modifica temporalmente para evitar errores.
+### Mejoras
+- Mejoras internas en la gestión de validaciones y consistencia de reglas.
+- Todos los mensajes de validación exitosa ahora se registran como SUCCESS en vez de INFO.
+- Ahora los mensajes de la validación interna están traducidos a todos los idiomas.
+### Soluciones
+- Ahora, si no se especifica una ruta para Spectral, la aplicación muestra un mensaje de error en pantalla en vez de crashear.
+- Se agregó validación global para evitar acciones dependientes de la ruta si esta no está definida.
 ## [1.0.2] - 2025-06-16
 ### Mejoras
 - Mejorados las pantallas y consistencias entre ellas.

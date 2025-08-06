@@ -30,6 +30,7 @@ fun ConfigDialog(
     onLanguageChange: (String) -> Unit,
     config: Configuration
 ) {
+    org.queststudios.yamlvalidation.core.AppConfig.language = language
     if (!showConfigDialog) return
     AlertDialog(
         onDismissRequest = onDismiss,

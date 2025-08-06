@@ -22,7 +22,7 @@ fun AppFooter() {
 
     Box(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp), contentAlignment = Alignment.Center) {
         Text(
-            AnnotatedString("© 2025 Quest Studios | v1.0.1.1"),
+            AnnotatedString("© 2025 Quest Studios | v1.1.0"),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             style = MaterialTheme.typography.bodySmall.copy(fontSize = 13.sp),
             modifier = Modifier
