@@ -170,6 +170,13 @@ class ValidatorCore(
             logger.log("SPECTRAL", output)
             logToFile("SPECTRAL", output)
             process.destroy()
+
+            // Copiar el YAML con el nombre cambiado en la misma ubicación que el txt exportado
+            val yamlCopyFile = File(yamlPath)
+            val yamlCopyName = yamlCopyFile.nameWithoutExtension + ".yaml"
+            val yamlCopyPath = File(yamlCopyFile.parentFile, yamlCopyName)
+            File(yamlPath).copyTo(yamlCopyPath, overwrite = true)
+
             return ValidationResult(true)
         } catch (e: Exception) {
             val msg = "Error ejecutando Spectral export: ${e.message}\n${e.stackTraceToString()}"
