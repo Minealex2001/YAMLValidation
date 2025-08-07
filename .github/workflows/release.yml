@@ -29,8 +29,8 @@ jobs:
         id: changelog
         run: |
           CHANGELOG=composeApp/src/desktopMain/resources/changelog.md
-          VERSION=$(grep -m 1 -oP '^##? \\[?v?([0-9]+\\.[0-9]+\\.[0-9]+)' "$CHANGELOG" | head -1 | grep -oP '[0-9]+\\.[0-9]+\\.[0-9]+')
-          BODY=$(awk '/^##? \\[?v?([0-9]+\\.[0-9]+\\.[0-9]+)/{if(x)exit;x=1;next}x' "$CHANGELOG" | sed '/^$/d')
+          VERSION=$(grep -m 1 -oE '^##? ?\[?v?([0-9]+\.[0-9]+\.[0-9]+)' "$CHANGELOG" | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+          BODY=$(awk '/^##? ?\[?v?([0-9]+\.[0-9]+\.[0-9]+)/{if(x)exit;x=1;next}x' "$CHANGELOG" | sed '/^$/d')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "body<<END" >> $GITHUB_OUTPUT
           echo "$BODY" >> $GITHUB_OUTPUT
