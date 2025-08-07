@@ -59,3 +59,17 @@ compose.desktop {
         }
     }
 }
+
+tasks.register<Jar>("fatJar") {
+    group = "build"
+    archiveClassifier.set("all")
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest {
+        attributes["Main-Class"] = "org.queststudios.yamlvalidation.MainKt"
+    }
+    from({
+        configurations["desktopRuntimeClasspath"].filter { it.name.endsWith(".jar") }.map { zipTree(it) }
+    })
+    val desktopJar = tasks.named("desktopJar").get() as Jar
+    with(desktopJar)
+}
