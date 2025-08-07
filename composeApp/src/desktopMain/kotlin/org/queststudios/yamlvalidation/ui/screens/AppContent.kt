@@ -149,7 +149,13 @@ fun AppContent() {
 
                             // 3. Copiar el YAML original a la nueva ubicación con el nuevo nombre
                             val originalFile = File(yamlPath)
-                            originalFile.copyTo(destYamlFile, overwrite = true)
+                            try {
+                                originalFile.copyTo(destYamlFile, overwrite = true)
+                            } catch (copyEx: Exception) {
+                                copyEx.printStackTrace()
+                                errorBanner = "Error al copiar el archivo YAML: ${copyEx.message}"
+                                return@launch
+                            }
 
                             // 4. Ejecutar spectral en el archivo YAML copiado
                             val validatorForExport = ValidatorCore(destYamlFile.absolutePath, logger, rules, null, language, spectralPath)
