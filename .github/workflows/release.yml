@@ -25,19 +25,23 @@ jobs:
       - name: Build fatJar
         run: ./gradlew :composeApp:fatJar
 
-      - name: Get version from CHANGELOG.md
+      - name: Get version and body from changelog.md
         id: changelog
         run: |
-          VERSION=$(grep -m 1 -oP '^##? \[?v?([0-9]+\.[0-9]+\.[0-9]+)' CHANGELOG.md | head -1 | grep -oP '[0-9]+\.[0-9]+\.[0-9]+')
+          CHANGELOG=composeApp/src/desktopMain/resources/changelog.md
+          VERSION=$(grep -m 1 -oP '^##? \\[?v?([0-9]+\\.[0-9]+\\.[0-9]+)' "$CHANGELOG" | head -1 | grep -oP '[0-9]+\\.[0-9]+\\.[0-9]+')
+          BODY=$(awk '/^##? \\[?v?([0-9]+\\.[0-9]+\\.[0-9]+)/{if(x)exit;x=1;next}x' "$CHANGELOG" | sed '/^$/d')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "body<<END" >> $GITHUB_OUTPUT
+          echo "$BODY" >> $GITHUB_OUTPUT
+          echo "END" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.changelog.outputs.version }}
           name: Release v${{ steps.changelog.outputs.version }}
-          body_path: CHANGELOG.md
+          body: ${{ steps.changelog.outputs.body }}
           files: composeApp/build/libs/*-all.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
