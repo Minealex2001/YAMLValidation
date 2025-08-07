@@ -50,7 +50,7 @@ fun AppFooter() {
     if (showChangelog) {
         ChangelogDialog(
             changelog = changelogText,
-            onDismiss = { showChangelog = false }
+            onDismiss = { }
         )
     }
 }
