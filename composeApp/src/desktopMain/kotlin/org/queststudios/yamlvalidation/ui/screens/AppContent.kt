@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import org.queststudios.yamlvalidation.ui.ExpressiveTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -12,7 +11,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.queststudios.yamlvalidation.ErrorBanner
 import org.queststudios.yamlvalidation.MainCard
 import org.queststudios.yamlvalidation.ResultsTabs
@@ -20,6 +21,7 @@ import org.queststudios.yamlvalidation.config.Configuration
 import org.queststudios.yamlvalidation.core.ValidatorCore
 import org.queststudios.yamlvalidation.i18n.Strings
 import org.queststudios.yamlvalidation.licensing.LicenseManager
+import org.queststudios.yamlvalidation.ui.ExpressiveTheme
 import org.queststudios.yamlvalidation.ui.containers.AppContainer
 import org.queststudios.yamlvalidation.ui.dialogs.ConfigDialog
 import org.queststudios.yamlvalidation.ui.dialogs.LicenseDialog
@@ -30,12 +32,18 @@ import org.yaml.snakeyaml.Yaml
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileWriter
+import java.net.HttpURLConnection
+import java.net.URL
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import java.util.*
 import javax.swing.JFileChooser
 import javax.swing.filechooser.FileNameExtensionFilter
+import kotlin.system.exitProcess
 
 /**
  * Este archivo orquesta la composición principal de la app, importando los componentes modulares.
@@ -78,6 +86,11 @@ fun AppContent() {
     val logger = remember { ComposeValidationLogger() }
     var yamlFile = if (yamlPath.isNotBlank()) File(yamlPath) else null
     var pendingOpenLicenseDialog by remember { mutableStateOf(false) }
+    var showUpdateDialog by remember { mutableStateOf(false) }
+    var latestVersion by remember { mutableStateOf("") }
+    var latestJarUrl by remember { mutableStateOf("") }
+    var isUpdating by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     ExpressiveTheme {
         AppContainer {
@@ -376,6 +389,155 @@ fun AppContent() {
                     Spacer(Modifier.height(8.dp))
                     AppFooter()
                 }
+            }
+        }
+    }
+
+    if (showUpdateDialog) {
+        AlertDialog(
+            onDismissRequest = { showUpdateDialog = false },
+            title = { Text("Nueva versión disponible") },
+            text = { Text("Hay una nueva versión ($latestVersion) disponible. ¿Deseas actualizar ahora?") },
+            confirmButton = {
+                Button(onClick = {
+                    isUpdating = true
+                    showUpdateDialog = false
+                    scope.launch {
+                        try {
+                            println("[Updater] Iniciando descarga de la nueva versión desde: $latestJarUrl")
+                            val jarPath = javaClass.protectionDomain.codeSource.location.toURI().path
+                            println("[Updater] Path real del JAR en ejecución: $jarPath")
+                            val jarFile = File(jarPath)
+                            val tmpFile = File(jarFile.parentFile, "update_tmp.jar")
+                            withContext(Dispatchers.IO) {
+                                URL(latestJarUrl).openStream().use { input ->
+                                    println("[Updater] Descargando archivo...")
+                                    Files.copy(input, tmpFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
+                                    println("[Updater] Descarga completada: ${tmpFile.absolutePath}")
+                                }
+                            }
+                            // Crear un script batch temporal para reemplazar el JAR y reiniciar
+                            val batFile = File(jarFile.parentFile, "update_and_restart.bat")
+                            batFile.writeText("""
+                                @echo off
+                                echo Esperando a que la app termine...
+                                ping 127.0.0.1 -n 3 > nul
+                                move /Y "${tmpFile.absolutePath}" "${jarFile.absolutePath}"
+                                echo Lanzando la nueva versión...
+                                start "" "javaw" -jar "${jarFile.absolutePath}"
+                                del "%~f0"
+                            """.trimIndent())
+                            println("[Updater] Script batch creado: ${batFile.absolutePath}")
+                            println("[Updater] Ejecutando script de actualización y saliendo...")
+                            ProcessBuilder("cmd", "/c", batFile.absolutePath).start()
+                            exitProcess(0)
+                        } catch (e: Exception) {
+                            println("[Updater] Error durante la descarga o actualización: ${e.message}")
+                            e.printStackTrace()
+                        } finally {
+                            isUpdating = false
+                        }
+                    }
+                }) {
+                    Text("Actualizar")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showUpdateDialog = false }) {
+                    Text("Más tarde")
+                }
+            }
+        )
+    }
+
+    LaunchedEffect(Unit) {
+        // Buscar config.properties en resources y luego en varios lugares del sistema de archivos
+        var githubToken: String? = null
+        val props = Properties()
+        val resourceStream = javaClass.getResourceAsStream("/config.properties")
+        if (resourceStream != null) {
+            props.load(resourceStream)
+            githubToken = props.getProperty("GITHUB_TOKEN")?.takeIf { it.isNotBlank() }
+            println("[Updater] Token leído desde resources/config.properties: ***")
+        } else {
+            val configPaths = listOf(
+                "../../config.properties",
+                "../config.properties",
+                "config.properties",
+                File(System.getProperty("user.dir"), "config.properties").absolutePath,
+                File(File(System.getProperty("java.class.path")).parentFile, "config.properties").absolutePath
+            )
+            for (path in configPaths) {
+                try {
+                    FileInputStream(path).use { props.load(it) }
+                    githubToken = props.getProperty("GITHUB_TOKEN")?.takeIf { it.isNotBlank() }
+                    if (githubToken != null) {
+                        println("[Updater] Token leído desde $path: ***")
+                        break
+                    }
+                } catch (e: Exception) {
+                    println("[Updater] No se pudo leer $path: ${e.message}")
+                }
+            }
+            if (githubToken == null) {
+                println("[Updater] No se encontró config.properties con GITHUB_TOKEN en: $configPaths")
+            }
+        }
+        // Leer versión actual del changelog desde resources
+        val changelogStream = javaClass.getResourceAsStream("/changelog.md")
+        val currentVersion = changelogStream?.bufferedReader()?.useLines { lines ->
+            lines.firstOrNull { it.startsWith("## [") }?.let {
+                val regex = Regex("\\[([0-9.]+)\\]")
+                regex.find(it)?.groupValues?.getOrNull(1) ?: ""
+            } ?: ""
+        } ?: ""
+        println("[Updater] Versión local: $currentVersion")
+        // Consultar la última release de GitHub
+        try {
+            val apiUrl = "https://api.github.com/repos/Minealex2001/YAMLValidation/releases/latest"
+            println("[Updater] Consultando la última release en: $apiUrl")
+            val json = withContext(Dispatchers.IO) {
+                val url = URL(apiUrl)
+                val conn = url.openConnection() as HttpURLConnection
+                if (githubToken != null) {
+                    println("[Updater] Usando token de GitHub para autenticación.")
+                    conn.setRequestProperty("Authorization", "Bearer $githubToken")
+                }
+                conn.connect()
+                println("[Updater] Código de respuesta HTTP: ${conn.responseCode}")
+                if (conn.responseCode == 200) {
+                    val response = conn.inputStream.bufferedReader().readText()
+                    println("[Updater] Respuesta recibida correctamente.")
+                    response
+                } else {
+                    val errorMsg = conn.errorStream?.bufferedReader()?.readText()
+                    println("[Updater] Error al consultar la release: HTTP ${conn.responseCode} ${conn.responseMessage}. ${errorMsg ?: "No error body"}")
+                    throw Exception("HTTP ${conn.responseCode}: ${conn.responseMessage}. ${errorMsg ?: "No error body"}")
+                }
+            }
+            println("[Updater] JSON de GitHub: $json")
+            // Extraer nombre de la release y versión
+            val nameRegex = Regex(""""name": *"([^"]+)"""")
+            val versionRegex = Regex("[Rr]elease[ _-]*v?([0-9.]+)")
+            val name = nameRegex.find(json)?.groupValues?.getOrNull(1) ?: ""
+            val jarRegex = Regex("https://[^\"]+\\.jar")
+            val remoteVersion = versionRegex.find(name)?.groupValues?.getOrNull(1) ?: ""
+            val jarUrl = jarRegex.find(json)?.value ?: ""
+            println("[Updater] Nombre release: $name, Versión remota: $remoteVersion, jar: $jarUrl")
+            if (remoteVersion.isNotEmpty() && jarUrl.isNotEmpty() && remoteVersion != currentVersion) {
+                latestVersion = remoteVersion
+                latestJarUrl = jarUrl
+                showUpdateDialog = true
+                println("[Updater] ¡Nueva versión encontrada!")
+            } else {
+                println("[Updater] No hay nueva versión.")
+            }
+        } catch (e: Exception) {
+            if (e.message?.contains("HTTP 404") == true) {
+                println("[Updater] No se encontró la release más reciente en GitHub. Puede que el repositorio sea privado, no exista, o no tenga releases publicados.")
+            } else {
+                println("[Updater] Error comprobando actualización: ${e.message}")
+                e.printStackTrace()
             }
         }
     }
