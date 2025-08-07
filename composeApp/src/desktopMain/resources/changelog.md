@@ -6,7 +6,7 @@
 ## [1.1.0] - 2025-08-06
 ### Funcionalidades
 - Validación de tipo 'informational' en POST cuando el path termina en /request.
-- Validación de año en x-certification.year para aceptar cualquier año de 4 dígitos.
+- Validación de año en x-certification.year ahora acepta cualquier año de 4 dígitos.
 - Al validar con Spectral sin exportar, el nombre se modifica temporalmente para evitar errores.
 ### Mejoras
 - Mejoras internas en la gestión de validaciones y consistencia de reglas.
