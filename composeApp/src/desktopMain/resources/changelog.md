@@ -1,4 +1,7 @@
 # Changelog
+## [1.1.1] - 2025-08-07
+### Funcionalidades
+- Al exportar el resultado de Spectral a un archivo txt, ahora también se copia el YAML original en la misma ubicación, usando el mismo nombre que aparece en el contrato pero con extensión .yaml.
 ## [1.1.0] - 2025-08-06
 ### Funcionalidades
 - Validación de tipo 'informational' en POST cuando el path termina en /request.
