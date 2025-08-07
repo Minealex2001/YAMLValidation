@@ -19,10 +19,20 @@ import org.queststudios.yamlvalidation.ui.dialogs.ChangelogDialog
 fun AppFooter() {
     var showChangelog by remember { mutableStateOf(false) }
     var changelogText by remember { mutableStateOf("") }
+    var version by remember { mutableStateOf("...") }
+
+    // Leer la versión al iniciar el Composable
+    LaunchedEffect(Unit) {
+        val resource = object {}.javaClass.classLoader.getResourceAsStream("changelog.md")
+        val changelog = resource?.bufferedReader()?.readText() ?: ""
+        val versionRegex = Regex("## \\[(.*?)\\]")
+        val match = versionRegex.find(changelog)
+        version = match?.groupValues?.get(1) ?: "?"
+    }
 
     Box(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp), contentAlignment = Alignment.Center) {
         Text(
-            AnnotatedString("© 2025 Quest Studios | v1.1.0"),
+            AnnotatedString("© 2025 Quest Studios | v$version"),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             style = MaterialTheme.typography.bodySmall.copy(fontSize = 13.sp),
             modifier = Modifier
