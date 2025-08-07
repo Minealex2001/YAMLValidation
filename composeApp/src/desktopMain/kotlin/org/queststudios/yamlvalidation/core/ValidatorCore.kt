@@ -158,7 +158,7 @@ class ValidatorCore(
         try {
             val spectralCmd = listOf(
                 "cmd", "/c",
-                "spectral lint -r ./poc/.spectral_v2.yaml -f pretty \"$yamlPath\" > \"$outputPath\""
+                "spectral lint -r ./poc/.spectral_v2.yaml -f pretty \"$yamlPath\""
             )
             val spectralDir = spectralPath?.takeIf { it.isNotBlank() }?.let { File(it) } ?: File(System.getProperty("user.dir"))
             val processBuilder = ProcessBuilder(spectralCmd)
@@ -169,14 +169,11 @@ class ValidatorCore(
             process.waitFor()
             logger.log("SPECTRAL", output)
             logToFile("SPECTRAL", output)
+
+            // Escribir la salida al fichero de destino
+            File(outputPath).writeText(output)
+
             process.destroy()
-
-            // Copiar el YAML con el nombre cambiado en la misma ubicación que el txt exportado
-            val yamlCopyFile = File(yamlPath)
-            val yamlCopyName = yamlCopyFile.nameWithoutExtension + ".yaml"
-            val yamlCopyPath = File(yamlCopyFile.parentFile, yamlCopyName)
-            File(yamlPath).copyTo(yamlCopyPath, overwrite = true)
-
             return ValidationResult(true)
         } catch (e: Exception) {
             val msg = "Error ejecutando Spectral export: ${e.message}\n${e.stackTraceToString()}"

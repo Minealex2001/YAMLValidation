@@ -125,9 +125,9 @@ fun AppContent() {
                     if (result == JFileChooser.APPROVE_OPTION) {
                         val folder = chooser.selectedFile
                         var nombreMicro = "microservicio"
-                        var nombreYamlOriginal: String? = null
-                        var renombrado = false
+
                         try {
+                            // 1. Leer el título del YAML para el nuevo nombre
                             if (yamlPath.isNotBlank()) {
                                 val yaml = Yaml()
                                 FileInputStream(yamlPath).use { input ->
@@ -135,51 +135,40 @@ fun AppContent() {
                                     val info = data["info"] as? Map<*, *>
                                     val title = info?.get("title") as? String
                                     if (!title.isNullOrBlank()) {
-                                        nombreMicro = title.replace(" ", "_")
+                                        nombreMicro = sanitizeFilename(title)
                                     }
                                 }
-                                yamlFile?.let {
-                                    val nombreSinExtension = it.nameWithoutExtension
-                                    if (nombreSinExtension != nombreMicro) {
-                                        val nuevoArchivo = File(it.parent, "$nombreMicro.yaml")
-                                        if (it.renameTo(nuevoArchivo)) {
-                                            nombreYamlOriginal = it.name
-                                            yamlFile = nuevoArchivo
-                                            renombrado = true
-                                        } else {
-                                            errorBanner = "No se pudo renombrar el archivo YAML para Spectral."
-                                        }
-                                    }
-                                }
+                            }
+
+                            // 2. Definir rutas de destino para el YAML y el TXT
+                            val destYamlFile = File(folder, "$nombreMicro.yaml")
+                            val now = LocalDateTime.now()
+                            val formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmm")
+                            val fechaHora = now.format(formatter)
+                            val outputTxtFile = File(folder, "${nombreMicro}-spectral-${fechaHora}.txt")
+
+                            // 3. Copiar el YAML original a la nueva ubicación con el nuevo nombre
+                            val originalFile = File(yamlPath)
+                            try {
+                                originalFile.copyTo(destYamlFile, overwrite = true)
+                            } catch (copyEx: Exception) {
+                                copyEx.printStackTrace()
+                                errorBanner = "Error al copiar el archivo YAML: ${copyEx.message}"
+                                return@launch
+                            }
+
+                            // 4. Ejecutar spectral en el archivo YAML copiado
+                            val validatorForExport = ValidatorCore(destYamlFile.absolutePath, logger, rules, null, language, spectralPath)
+                            val resultExport = validatorForExport.exportSpectralToFile(outputTxtFile.absolutePath)
+
+                            if (resultExport.success) {
+                                showSpectralExportedDialog = true
+                            } else {
+                                errorBanner = Strings.get(language, "export.error") + " " + (resultExport.errorMessage ?: "")
                             }
                         } catch (ex: Exception) {
                             ex.printStackTrace()
-                        }
-                        val now = LocalDateTime.now()
-                        val formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmm")
-                        val fechaHora = now.format(formatter)
-                        val fileName = "${nombreMicro}-spectral-${fechaHora}.txt"
-                        val outputFile = File(folder, fileName)
-                        val validatorToUse = if (yamlFile != null && yamlFile!!.absolutePath != yamlPath) {
-                            ValidatorCore(yamlFile!!.absolutePath, logger, rules, null, language, spectralPath)
-                        } else validator
-                        val resultExport = validatorToUse.exportSpectralToFile(outputFile.absolutePath)
-                        if (renombrado && yamlFile != null && nombreYamlOriginal != null) {
-                            val originalFile = File(yamlFile!!.parentFile ?: File("."), nombreYamlOriginal)
-                            val restored = yamlFile!!.renameTo(originalFile)
-                            if (!restored) {
-                                errorBanner = "No se pudo restaurar el nombre original del archivo YAML."
-                            } else {
-                                if (yamlPath != originalFile.absolutePath) {
-                                    yamlPath = originalFile.absolutePath
-                                }
-                            }
-                        }
-                        if (resultExport.success) {
-                            showSpectralExportedDialog = true
-                        } else {
-                            errorBanner =
-                                Strings.get(language, "export.error") + " " + (resultExport.errorMessage ?: "")
+                            errorBanner = "Error durante la exportación: ${ex.message}"
                         }
                     }
                     showSpectralChooser = false
