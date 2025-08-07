@@ -135,7 +135,7 @@ fun AppContent() {
                                     val info = data["info"] as? Map<*, *>
                                     val title = info?.get("title") as? String
                                     if (!title.isNullOrBlank()) {
-                                        nombreMicro = title.replace(" ", "_").replace(Regex("[^a-zA-Z0-9_]"), "")
+                                        nombreMicro = sanitizeFilename(title)
                                     }
                                 }
                             }
