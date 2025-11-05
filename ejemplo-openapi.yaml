@@ -1,0 +1,572 @@
+openapi: 3.0.3
+info:
+  title: API de Ejemplo - Microservicio de Prueba
+  version: 1.0.0
+  description: |
+    Esta es una API de ejemplo para probar el validador YAML.
+    Incluye diferentes tipos de endpoints y operaciones para validar todas las reglas.
+  contact:
+    name: API Support
+    email: support@example.com
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+servers:
+  - url: https://api.example.com/v1
+    description: Servidor de producción
+  - url: https://staging-api.example.com/v1
+    description: Servidor de staging
+
+tags:
+  - name: Usuarios
+    description: Operaciones relacionadas con usuarios
+  - name: Productos
+    description: Operaciones relacionadas con productos
+  - name: Pedidos
+    description: Operaciones relacionadas con pedidos
+
+paths:
+  /usuarios:
+    get:
+      operationId: getUsuarios
+      tags:
+        - Usuarios
+      summary: Obtener lista de usuarios
+      description: Retorna una lista de todos los usuarios registrados
+      x-absis-operation:
+        type: informational
+        security:
+          - oauth2: []
+      x-certification:
+        objective: A
+        year: 2025
+        certification: ""
+      x-typology:
+        typology: external
+      responses:
+        '200':
+          description: Lista de usuarios obtenida correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Usuario'
+        '400':
+          description: DOMINIO - Error en la solicitud. El parámetro proporcionado no es válido.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      operationId: crearUsuario
+      tags:
+        - Usuarios
+      summary: Crear un nuevo usuario
+      description: Crea un nuevo usuario en el sistema
+      x-absis-operation:
+        type: management
+        security:
+          - oauth2: []
+      x-certification:
+        objective: A
+        year: 2025
+        certification: ""
+      x-typology:
+        typology: external
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsuarioInput'
+            example:
+              nombre: "Juan Pérez"
+              email: "juan.perez@example.com"
+              telefono: "+34 600 123 456"
+      responses:
+        '201':
+          description: Usuario creado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+        '400':
+          description: DOMINIO - Error en la solicitud. Los datos proporcionados no son válidos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /usuarios/{id}:
+    get:
+      operationId: getUsuarioPorId
+      tags:
+        - Usuarios
+      summary: Obtener un usuario por ID
+      description: Retorna la información de un usuario específico
+      x-absis-operation:
+        type: informational
+        security:
+          - oauth2: []
+      x-certification:
+        objective: A
+        year: 2025
+        certification: ""
+      x-typology:
+        typology: external
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID del usuario
+          schema:
+            type: string
+            pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+      responses:
+        '200':
+          description: Usuario encontrado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+        '400':
+          description: DOMINIO - Error en la solicitud. El ID proporcionado no es válido.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      operationId: actualizarUsuario
+      tags:
+        - Usuarios
+      summary: Actualizar un usuario
+      description: Actualiza la información de un usuario existente
+      x-absis-operation:
+        type: management
+        security:
+          - oauth2: []
+      x-certification:
+        objective: A
+        year: 2025
+        certification: ""
+      x-typology:
+        typology: external
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID del usuario
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsuarioInput'
+      responses:
+        '200':
+          description: Usuario actualizado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+        '400':
+          description: DOMINIO - Error en la solicitud. Los datos proporcionados no son válidos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /productos:
+    get:
+      operationId: getProductos
+      tags:
+        - Productos
+      summary: Obtener lista de productos
+      description: Retorna una lista de todos los productos disponibles
+      x-absis-operation:
+        type: informational
+        security:
+          - oauth2: []
+      x-certification:
+        objective: A
+        year: 2025
+        certification: ""
+      x-typology:
+        typology: external
+      responses:
+        '200':
+          description: Lista de productos obtenida correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Producto'
+        '400':
+          description: DOMINIO - Error en la solicitud. Los parámetros proporcionados no son válidos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      operationId: crearProducto
+      tags:
+        - Productos
+      summary: Crear un nuevo producto
+      description: Crea un nuevo producto en el catálogo
+      x-absis-operation:
+        type: management
+        security:
+          - oauth2: []
+      x-certification:
+        objective: A
+        year: 2025
+        certification: ""
+      x-typology:
+        typology: external
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductoInput'
+      responses:
+        '201':
+          description: Producto creado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Producto'
+        '400':
+          description: DOMINIO - Error en la solicitud. Los datos del producto no son válidos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /pedidos/request:
+    post:
+      operationId: solicitarPedido
+      tags:
+        - Pedidos
+      summary: Solicitar un nuevo pedido
+      description: Crea una solicitud de pedido en el sistema
+      x-absis-operation:
+        type: informational
+        security:
+          - oauth2: []
+      x-certification:
+        objective: A
+        year: 2025
+        certification: ""
+      x-typology:
+        typology: external
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PedidoRequest'
+      responses:
+        '202':
+          description: Solicitud de pedido creada correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pedido'
+        '400':
+          description: DOMINIO - Error en la solicitud. Los datos del pedido no son válidos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /int/usuarios-internos:
+    get:
+      operationId: internalGetUsuariosInternos
+      tags:
+        - Usuarios
+      summary: Obtener usuarios internos (endpoint interno)
+      description: Endpoint interno para obtener usuarios del sistema
+      x-absis-operation:
+        type: informational
+        security:
+          - oauth2: []
+      x-certification:
+        objective: A
+        year: 2025
+        certification: ""
+      x-typology:
+        typology: external
+      responses:
+        '200':
+          description: Lista de usuarios internos obtenida correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Usuario'
+        '400':
+          description: Error en la solicitud
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Usuario:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Identificador único del usuario
+        nombre:
+          type: string
+          description: Nombre completo del usuario
+        email:
+          type: string
+          format: email
+          description: Correo electrónico del usuario
+        telefono:
+          type: string
+          description: Número de teléfono del usuario
+        fechaCreacion:
+          type: string
+          format: date-time
+          description: Fecha de creación del usuario
+      required:
+        - id
+        - nombre
+        - email
+
+    UsuarioInput:
+      type: object
+      properties:
+        nombre:
+          type: string
+          description: Nombre completo del usuario
+        email:
+          type: string
+          format: email
+          description: Correo electrónico del usuario
+        telefono:
+          type: string
+          description: Número de teléfono del usuario
+      required:
+        - nombre
+        - email
+
+    Producto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Identificador único del producto
+        nombre:
+          type: string
+          description: Nombre del producto
+        descripcion:
+          type: string
+          description: Descripción del producto
+        precio:
+          type: number
+          format: float
+          description: Precio del producto
+        stock:
+          type: integer
+          description: Cantidad disponible en stock
+        fechaCreacion:
+          type: string
+          format: date-time
+          description: Fecha de creación del producto
+      required:
+        - id
+        - nombre
+        - precio
+
+    ProductoInput:
+      type: object
+      properties:
+        nombre:
+          type: string
+          description: Nombre del producto
+        descripcion:
+          type: string
+          description: Descripción del producto
+        precio:
+          type: number
+          format: float
+          description: Precio del producto
+        stock:
+          type: integer
+          description: Cantidad inicial en stock
+      required:
+        - nombre
+        - precio
+
+    Pedido:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Identificador único del pedido
+        usuarioId:
+          type: string
+          format: uuid
+          description: ID del usuario que realiza el pedido
+        productos:
+          type: array
+          items:
+            type: object
+            properties:
+              productoId:
+                type: string
+                format: uuid
+              cantidad:
+                type: integer
+        estado:
+          type: string
+          enum: [pendiente, procesando, completado, cancelado]
+          description: Estado del pedido
+        fechaCreacion:
+          type: string
+          format: date-time
+          description: Fecha de creación del pedido
+      required:
+        - id
+        - usuarioId
+        - productos
+        - estado
+
+    PedidoRequest:
+      type: object
+      properties:
+        usuarioId:
+          type: string
+          format: uuid
+          description: ID del usuario que realiza el pedido
+        productos:
+          type: array
+          items:
+            type: object
+            properties:
+              productoId:
+                type: string
+                format: uuid
+              cantidad:
+                type: integer
+                minimum: 1
+          minItems: 1
+      required:
+        - usuarioId
+        - productos
+
+    Error:
+      type: object
+      properties:
+        codigo:
+          type: integer
+          description: Código de error
+        mensaje:
+          type: string
+          description: Mensaje de error descriptivo
+        detalles:
+          type: string
+          description: Detalles adicionales del error
+      required:
+        - codigo
+        - mensaje
+
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://auth.example.com/oauth/authorize
+          tokenUrl: https://auth.example.com/oauth/token
+          scopes:
+            read:users: Permiso para leer usuarios
+            write:users: Permiso para crear y actualizar usuarios
+            read:products: Permiso para leer productos
+            write:products: Permiso para crear y actualizar productos
+            read:orders: Permiso para leer pedidos
+            write:orders: Permiso para crear pedidos
+
+security:
+  - oauth2:
+      - read:users
+      - read:products
+      - read:orders
+

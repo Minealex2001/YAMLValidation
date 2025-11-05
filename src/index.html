@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validador YAML</title>
+    <!-- Material Web Components -->
+    <script type="module" src="https://esm.sh/@material/web@1.4.0/all.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet" href="styles.css">
+    <script type="module" src="./app.js"></script>
+</head>
+<body>
+    <!-- Custom Title Bar -->
+    <div id="title-bar" class="title-bar">
+        <div class="title-bar-drag-region">
+            <div class="title-bar-content">
+                <div class="title-bar-icon">
+                    <span class="material-symbols-outlined">settings</span>
+                </div>
+                <div class="title-bar-title">Validador YAML</div>
+            </div>
+            <div class="title-bar-controls">
+                <button id="title-bar-minimize" class="title-bar-button" title="Minimizar">
+                    <span class="material-symbols-outlined">remove</span>
+                </button>
+                <button id="title-bar-maximize" class="title-bar-button" title="Maximizar">
+                    <span class="material-symbols-outlined maximize-icon">crop_free</span>
+                    <span class="material-symbols-outlined restore-icon" style="display: none;">filter_none</span>
+                </button>
+                <button id="title-bar-close" class="title-bar-button close-button" title="Cerrar">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="theme-toggle" class="theme-toggle"></div>
+    <div id="error-banner" class="error-banner hidden"></div>
+    <div class="container"></div>
+    <footer id="app-footer"></footer>
+    
+    <!-- Dialogs -->
+    <div id="config-dialog" class="dialog-overlay"></div>
+    <div id="license-dialog" class="dialog-overlay"></div>
+    <div id="trial-expired-dialog" class="dialog-overlay"></div>
+    <div id="spectral-exported-dialog" class="dialog-overlay"></div>
+    <div id="spectral-dialog" class="dialog-overlay"></div>
+    <div id="help-dialog" class="dialog-overlay"></div>
+</body>
+</html>
+
