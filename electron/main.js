@@ -1,12 +1,20 @@
-const { app, BrowserWindow, dialog, ipcMain } = require('electron');
+const { app, BrowserWindow, dialog, ipcMain, shell } = require('electron');
 const path = require('path');
 const fs = require('fs').promises;
 const { spawn } = require('child_process');
 const Store = require('electron-store');
+const { autoUpdater } = require('electron-updater');
 
 const store = new Store();
 
 let mainWindow;
+
+// Configurar auto-updater
+autoUpdater.autoDownload = false;
+autoUpdater.autoInstallOnAppQuit = true;
+
+// Configurar el canal de actualizaciones (opcional, usar 'latest' por defecto)
+autoUpdater.channel = 'latest';
 
 function createWindow() {
   const preloadPath = path.join(__dirname, 'preload.js');
@@ -64,16 +72,132 @@ function createWindow() {
   mainWindow.on('unmaximize', () => {
     mainWindow.webContents.send('window-unmaximize');
   });
+
+  // Manejar enlaces externos para abrirlos en el navegador del sistema
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    shell.openExternal(url);
+    return { action: 'deny' };
+  });
+
+  // Prevenir navegación a URLs externas dentro de la aplicación
+  mainWindow.webContents.on('will-navigate', (event, navigationUrl) => {
+    const parsedUrl = new URL(navigationUrl);
+    
+    // Si la URL no es el archivo local, abrir en el navegador externo
+    if (parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:') {
+      event.preventDefault();
+      shell.openExternal(navigationUrl);
+    }
+  });
 }
 
 app.whenReady().then(() => {
   createWindow();
+
+  // Iniciar verificación de actualizaciones después de que la app esté lista
+  // Esperar un poco para que la ventana se cargue completamente
+  setTimeout(() => {
+    checkForUpdates();
+  }, 5000);
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createWindow();
     }
   });
+});
+
+// Función para verificar actualizaciones
+function checkForUpdates() {
+  // Solo verificar en producción, no en desarrollo
+  if (process.argv.includes('--dev')) {
+    console.log('Modo desarrollo: omitiendo verificación de actualizaciones');
+    return;
+  }
+
+  console.log('Verificando actualizaciones...');
+  
+  autoUpdater.checkForUpdates().catch(err => {
+    console.error('Error al verificar actualizaciones:', err);
+  });
+}
+
+// Eventos del auto-updater
+autoUpdater.on('checking-for-update', () => {
+  console.log('Verificando actualizaciones...');
+  if (mainWindow) {
+    mainWindow.webContents.send('update-checking');
+  }
+});
+
+autoUpdater.on('update-available', (info) => {
+  console.log('Actualización disponible:', info.version);
+  if (mainWindow) {
+    mainWindow.webContents.send('update-available', info);
+    
+    // Mostrar diálogo al usuario
+    dialog.showMessageBox(mainWindow, {
+      type: 'info',
+      title: 'Actualización disponible',
+      message: `Hay una nueva versión disponible (${info.version}). ¿Deseas descargarla ahora?`,
+      buttons: ['Descargar', 'Más tarde'],
+      defaultId: 0,
+      cancelId: 1
+    }).then((result) => {
+      if (result.response === 0) {
+        // Usuario quiere descargar
+        autoUpdater.downloadUpdate();
+      }
+    });
+  }
+});
+
+autoUpdater.on('update-not-available', (info) => {
+  console.log('No hay actualizaciones disponibles');
+  if (mainWindow) {
+    mainWindow.webContents.send('update-not-available', info);
+  }
+});
+
+autoUpdater.on('error', (err) => {
+  console.error('Error en auto-updater:', err);
+  if (mainWindow) {
+    mainWindow.webContents.send('update-error', err.message);
+  }
+});
+
+autoUpdater.on('download-progress', (progressObj) => {
+  let log_message = "Velocidad de descarga: " + progressObj.bytesPerSecond;
+  log_message = log_message + ' - Descargado ' + progressObj.percent + '%';
+  log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+  console.log(log_message);
+  
+  if (mainWindow) {
+    mainWindow.webContents.send('update-download-progress', progressObj);
+  }
+});
+
+autoUpdater.on('update-downloaded', (info) => {
+  console.log('Actualización descargada. Reiniciando aplicación...');
+  
+  if (mainWindow) {
+    mainWindow.webContents.send('update-downloaded', info);
+    
+    // Preguntar al usuario si quiere instalar ahora
+    dialog.showMessageBox(mainWindow, {
+      type: 'info',
+      title: 'Actualización descargada',
+      message: 'La actualización se ha descargado correctamente. La aplicación se reiniciará para instalar la actualización.',
+      buttons: ['Reiniciar ahora', 'Más tarde'],
+      defaultId: 0,
+      cancelId: 1
+    }).then((result) => {
+      if (result.response === 0) {
+        // Reiniciar e instalar
+        autoUpdater.quitAndInstall(false, true);
+      }
+    });
+  }
 });
 
 app.on('window-all-closed', () => {
@@ -281,6 +405,34 @@ ipcMain.handle('window:isMaximized', () => {
     return mainWindow.isMaximized();
   }
   return false;
+});
+
+// Update handlers
+ipcMain.handle('update:check', async () => {
+  try {
+    await checkForUpdates();
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('update:download', async () => {
+  try {
+    autoUpdater.downloadUpdate();
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('update:install', async () => {
+  try {
+    autoUpdater.quitAndInstall(false, true);
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
 });
 
 // Git pull handler

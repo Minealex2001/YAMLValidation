@@ -20,11 +20,12 @@
   "license": "MIT",
   "devDependencies": {
     "cross-env": "^10.1.0",
-    "electron": "^28.0.0",
-    "electron-builder": "^23.6.0"
+    "electron": "^35.7.5",
+    "electron-builder": "^26.0.12"
   },
   "dependencies": {
     "electron-store": "^8.1.0",
+    "electron-updater": "^6.1.7",
     "js-yaml": "^4.1.0"
   },
   "build": {
@@ -32,6 +33,11 @@
     "productName": "YAML Validator",
     "directories": {
       "output": "dist"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "tu-usuario",
+      "repo": "tu-repositorio"
     },
     "files": [
       "electron/**/*",

@@ -39,7 +39,7 @@ export class ResultsTabs {
     const effectiveSelectedTab = showSpectralTab ? selectedTab : 0;
     
     this.container.innerHTML = `
-      <md-outlined-card style="padding: 24px;">
+      <div class="card" style="padding: 24px;">
         <md-tabs id="results-tabs" active-tab-index="${effectiveSelectedTab}">
           <md-primary-tab id="tab-0">
             <span slot="icon" class="material-symbols-outlined">checklist</span>
@@ -55,7 +55,7 @@ export class ResultsTabs {
         <div class="tab-content">
           ${effectiveSelectedTab === 0 ? this.renderAppValidations(logs) : (showSpectralTab ? this.renderSpectralValidations(spectralOutput) : this.renderAppValidations(logs))}
         </div>
-      </md-outlined-card>
+      </div>
     `;
 
     // Tab event listeners - solo responder a cambios del usuario, no programáticos
@@ -118,7 +118,7 @@ export class ResultsTabs {
       `;
     }
 
-    return `<div class="spectral-output" style="white-space: pre-wrap; font-family: 'Roboto Mono', 'Consolas', 'Monaco', monospace; padding: 20px; background: var(--md-sys-color-surface-variant); border-radius: 16px; font-size: 0.875rem; line-height: 1.8; color: var(--md-sys-color-on-surface-variant); border: 1px solid var(--md-sys-color-outline-variant);">${this.escapeHtml(spectralOutput)}</div>`;
+    return `<div class="spectral-output" style="white-space: pre-wrap; font-family: 'Roboto Mono', 'Consolas', 'Monaco', monospace; padding: 20px; background: var(--md-sys-color-surface-variant); border-radius: 16px; font-size: 0.875rem; line-height: 1.8; color: var(--md-sys-color-on-surface-variant); border: none; outline: none;">${this.escapeHtml(spectralOutput)}</div>`;
   }
 
   escapeHtml(text) {

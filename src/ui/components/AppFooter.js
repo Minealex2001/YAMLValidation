@@ -24,13 +24,13 @@ export class AppFooter {
           </span>
           <span style="color: var(--md-sys-color-on-surface-variant); font-size: 0.875rem;">•</span>
           <p style="margin: 0; color: var(--md-sys-color-on-surface-variant); font-size: 0.875rem;">
-            © 2025 <strong style="font-weight: 600; color: var(--md-sys-color-on-surface);">Minealex Games</strong> - YAML Validator | Licencia cedida a NTT Data
+            © 2025 <strong style="font-weight: 600; color: var(--md-sys-color-on-surface);"><a href="https://minealexgames.com" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none;">Minealex Games</a></strong> - YAML Validator | Licencia cedida a NTT Data
           </p>
         </div>
       `;
     } else {
       this.container.innerHTML = `
-        <p style="margin: 0; color: var(--md-sys-color-on-surface-variant); font-size: 0.875rem;">© 2025 Minealex Games - YAML Validator</p>
+        <p style="margin: 0; color: var(--md-sys-color-on-surface-variant); font-size: 0.875rem;">© 2025 <a href="https://minealexgames.com" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none;">Minealex Games</a> - YAML Validator</p>
       `;
     }
   }

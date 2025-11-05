@@ -32,7 +32,7 @@ export class MainCard {
     const { yamlPath, onYamlPathChange, onYamlChooser, language, onValidate, onSpectral, onExport, onConfig, onHelp, isNTT } = this.props;
 
     this.container.innerHTML = `
-      <md-filled-card style="padding: 32px;">
+      <div class="card" style="padding: 32px;">
         ${isNTT ? `
           <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px; padding: 12px 0;">
             <div style="font-size: 28px; font-weight: 700; color: var(--md-sys-color-primary); letter-spacing: 3px; text-transform: uppercase; position: relative; padding-bottom: 8px;">
@@ -81,7 +81,7 @@ export class MainCard {
             ${Strings.get(language, 'help.button')}
           </md-outlined-button>
         </div>
-      </md-filled-card>
+      </div>
     `;
 
     // Event listeners - usar addEventListener helper para tracking

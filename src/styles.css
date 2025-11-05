@@ -43,8 +43,9 @@
     
     /* Custom app colors */
     --background-color: #F5F5F5;
-    --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    --card-shadow-elevated: 0 4px 16px rgba(0, 0, 0, 0.15);
+    --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+    --card-shadow-elevated: 0 3px 6px rgba(0, 0, 0, 0.15);
+    --card-shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.18);
 }
 
 /* NTT Data Brand Colors - Solo cuando data-license="ntt" */
@@ -138,8 +139,9 @@
     
     /* Custom app colors - Dark */
     --background-color: #121212;
-    --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    --card-shadow-elevated: 0 4px 16px rgba(0, 0, 0, 0.4);
+    --card-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    --card-shadow-elevated: 0 4px 8px rgba(0, 0, 0, 0.4);
+    --card-shadow-hover: 0 6px 12px rgba(0, 0, 0, 0.5);
 }
 
 /* NTT Data Dark Mode - Solo cuando data-license="ntt" */
@@ -289,10 +291,11 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background-color 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     padding: 0;
     margin: 0;
-    border-radius: 0;
+    border-radius: 6px;
+    position: relative;
 }
 
 .title-bar-button:hover {
@@ -389,25 +392,51 @@ body {
     background-color: rgba(0, 0, 0, 0.1);
 }
 
-/* Material Cards */
-md-filled-card {
+/* Card - Reemplazo de md-filled-card */
+.card {
     margin-bottom: 0;
-    border-radius: 28px !important;
+    border-radius: 16px;
     overflow: hidden;
-    box-shadow: none !important; /* Eliminar sombra que puede verse como rectángulo */
-    background-color: var(--md-sys-color-surface) !important;
-    border: none !important; /* Eliminar borde transparente que puede verse como rectángulo */
-    outline: none !important; /* Eliminar outline */
+    box-shadow: var(--card-shadow);
+    background-color: var(--md-sys-color-surface);
+    border: none;
+    outline: none;
+    transition: box-shadow 0.2s ease;
+    width: 100%;
 }
 
+.card:hover {
+    box-shadow: var(--card-shadow-hover);
+}
+
+[data-theme="dark"] .card {
+    background-color: var(--md-sys-color-surface);
+}
+
+/* Material Cards - Mantener por compatibilidad */
+md-filled-card {
+    margin-bottom: 0;
+    border-radius: 16px !important;
+    overflow: hidden;
+    box-shadow: var(--card-shadow) !important;
+    background-color: var(--md-sys-color-surface) !important;
+    border: none !important;
+    outline: none !important;
+    transition: box-shadow 0.2s ease !important;
+    /* Eliminar cualquier borde o outline que pueda aparecer */
+    --md-filled-card-container-color: var(--md-sys-color-surface);
+}
+
+/* md-outlined-card - Ya no se usa, reemplazado por md-filled-card */
 md-outlined-card {
     margin-bottom: 0;
-    border-radius: 28px !important;
+    border-radius: 16px !important;
     overflow: hidden;
-    box-shadow: none !important; /* Eliminar sombra que puede verse como rectángulo */
+    box-shadow: var(--card-shadow) !important;
     background-color: var(--md-sys-color-surface) !important;
-    border: none !important; /* Eliminar borde completamente */
-    outline: none !important; /* Eliminar outline */
+    border: none !important;
+    outline: none !important;
+    transition: box-shadow 0.2s ease !important;
 }
 
 [data-theme="dark"] md-filled-card {
@@ -418,45 +447,20 @@ md-outlined-card {
 
 [data-theme="dark"] md-outlined-card {
     background-color: var(--md-sys-color-surface) !important;
-    border: none !important; /* Eliminar borde completamente */
+    border: none !important;
     outline: none !important;
 }
 
 /* Typography */
 h1 {
     font-size: 2.5rem;
-    font-weight: 300;
+    font-weight: 400;
     color: var(--md-sys-color-on-surface);
     text-align: center;
     margin-bottom: 24px;
     margin-top: 0;
-    letter-spacing: -0.03em;
-    line-height: 1.15;
-    background: linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-tertiary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    position: relative;
-    padding-bottom: 12px;
-}
-
-h1::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80px;
-    height: 3px;
-    background: linear-gradient(90deg, transparent, var(--md-sys-color-primary), transparent);
-    border-radius: 2px;
-}
-
-[data-theme="dark"] h1 {
-    background: linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-secondary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
 }
 
 h2 {
@@ -517,23 +521,33 @@ md-tabs {
 /* Log Entries */
 .log-entry {
     margin-bottom: 16px;
-    padding: 20px 24px;
-    border-radius: 16px;
+    padding: 16px 20px;
+    border-radius: 12px;
     font-size: 0.9375rem;
-    line-height: 1.8;
-    border-left: 5px solid transparent;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-    backdrop-filter: blur(10px);
+    line-height: 1.6;
+    border: none;
+    border-left: none;
+    outline: none;
+    transition: all 0.2s ease;
+    box-shadow: var(--card-shadow);
+    position: relative;
+}
+
+/* Usar un pseudo-elemento para el indicador de color en lugar de border */
+.log-entry::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background-color: transparent;
+    border-radius: 12px 0 0 12px;
 }
 
 .log-entry:hover {
-    transform: translateX(6px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-}
-
-[data-theme="dark"] .log-entry:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transform: translateX(4px);
+    box-shadow: var(--card-shadow-elevated);
 }
 
 .log-entry strong {
@@ -542,40 +556,58 @@ md-tabs {
     letter-spacing: 0.5px;
 }
 
+.log-entry.error::before {
+    background-color: var(--md-sys-color-error);
+}
+
 .log-entry.error {
     background-color: var(--md-sys-color-error-container);
     color: var(--md-sys-color-on-error-container);
-    border-left-color: var(--md-sys-color-error);
+}
+
+.log-entry.warning::before {
+    background-color: var(--md-sys-color-tertiary);
 }
 
 .log-entry.warning {
     background-color: var(--md-sys-color-tertiary-container);
     color: var(--md-sys-color-on-tertiary-container);
-    border-left-color: var(--md-sys-color-tertiary);
+}
+
+[data-theme="dark"] .log-entry.warning::before {
+    background-color: #FF9800;
 }
 
 [data-theme="dark"] .log-entry.warning {
     background-color: rgba(255, 152, 0, 0.15);
     color: #FFB74D;
-    border-left-color: #FF9800;
+}
+
+.log-entry.success::before {
+    background-color: #4CAF50;
 }
 
 .log-entry.success {
     background-color: rgba(76, 175, 80, 0.15);
     color: #4CAF50;
-    border-left-color: #4CAF50;
+}
+
+[data-theme="dark"] .log-entry.success::before {
+    background-color: #66BB6A;
 }
 
 [data-theme="dark"] .log-entry.success {
     background-color: rgba(76, 175, 80, 0.2);
     color: #81C784;
-    border-left-color: #66BB6A;
+}
+
+.log-entry.info::before {
+    background-color: var(--md-sys-color-primary);
 }
 
 .log-entry.info {
     background-color: var(--md-sys-color-primary-container);
     color: var(--md-sys-color-on-primary-container);
-    border-left-color: var(--md-sys-color-primary);
 }
 
 /* Dialogs */
@@ -827,6 +859,14 @@ footer {
     flex-shrink: 0;
 }
 
+#app-footer a {
+    transition: color 0.2s ease;
+}
+
+#app-footer a:hover {
+    color: var(--md-sys-color-primary);
+}
+
 /* Scrollbar Styling */
 ::-webkit-scrollbar {
     width: 8px;
@@ -862,26 +902,9 @@ footer {
 .empty-state .material-symbols-outlined {
     font-size: 96px;
     margin-bottom: 32px;
-    opacity: 0.5;
+    opacity: 0.4;
     display: block;
     color: var(--md-sys-color-primary);
-    animation: pulse 2.5s ease-in-out infinite;
-    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
-}
-
-[data-theme="dark"] .empty-state .material-symbols-outlined {
-    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
-}
-
-@keyframes pulse {
-    0%, 100% {
-        opacity: 0.4;
-        transform: scale(1);
-    }
-    50% {
-        opacity: 0.7;
-        transform: scale(1.08);
-    }
 }
 
 .empty-state p {
@@ -892,67 +915,16 @@ footer {
     letter-spacing: 0.3px;
 }
 
-/* Cards improvements */
-md-filled-card,
-md-outlined-card {
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
-    width: 100%;
-}
-
-md-filled-card {
-    border: none !important; /* Eliminar borde que puede verse como rectángulo */
-    box-shadow: none !important; /* Eliminar sombra que puede verse como rectángulo */
-    outline: none !important; /* Eliminar outline */
-}
-
-md-filled-card::before,
-md-filled-card::after {
-    display: none !important; /* Eliminar pseudo-elementos que pueden verse como rectángulos */
-}
-
-md-outlined-card {
-    border: none !important; /* Eliminar borde completamente */
-    box-shadow: none !important; /* Eliminar sombra que puede verse como rectángulo */
-    outline: none !important; /* Eliminar outline */
-}
-
-md-outlined-card::before,
-md-outlined-card::after {
-    display: none !important; /* Eliminar pseudo-elementos que pueden verse como rectángulos */
-}
-
-md-filled-card:hover,
-md-outlined-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
-}
-
-[data-theme="dark"] md-filled-card:hover {
-    border: none !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
-}
-
-[data-theme="dark"] md-outlined-card:hover {
-    border: none !important; /* Sin borde en hover */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
-}
-
-/* Material components theme support */
-md-filled-card[data-theme="dark"],
-md-outlined-card[data-theme="dark"],
-md-dialog[data-theme="dark"] {
-    background-color: var(--md-sys-color-surface);
-    color: var(--md-sys-color-on-surface);
-}
+/* Cards improvements - Ya no se usan md-filled-card, usar .card en su lugar */
 
 /* Button improvements */
 md-filled-button,
 md-filled-tonal-button,
 md-outlined-button,
 md-text-button {
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s ease;
     border-radius: 24px !important;
-    min-height: 52px;
+    min-height: 48px;
     font-weight: 500;
     letter-spacing: 0.5px;
 }
@@ -961,21 +933,14 @@ md-filled-button:hover,
 md-filled-tonal-button:hover,
 md-outlined-button:hover,
 md-text-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-[data-theme="dark"] md-filled-button:hover,
-[data-theme="dark"] md-filled-tonal-button:hover,
-[data-theme="dark"] md-outlined-button:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    transform: translateY(-1px);
 }
 
 md-filled-button:active,
 md-filled-tonal-button:active,
 md-outlined-button:active,
 md-text-button:active {
-    transform: scale(0.97) translateY(0);
+    transform: translateY(0);
 }
 
 /* Mejor contraste para botones en modo oscuro */
@@ -985,7 +950,8 @@ md-text-button:active {
 }
 
 [data-theme="dark"] md-outlined-button {
-    --md-outlined-button-outline-color: var(--md-sys-color-outline);
+    --md-outlined-button-outline-color: transparent;
+    --md-outlined-button-outline-width: 0px;
     --md-outlined-button-label-text-color: var(--md-sys-color-on-surface);
 }
 
@@ -996,10 +962,16 @@ md-filled-text-field {
     --md-filled-text-field-input-text-color: var(--md-sys-color-on-surface);
     --md-filled-text-field-label-text-color: var(--md-sys-color-on-surface-variant);
     --md-filled-text-field-supporting-text-color: var(--md-sys-color-on-surface-variant);
+    /* Eliminar bordes visibles */
+    --md-filled-text-field-outline-color: transparent;
+    --md-filled-text-field-outline-width: 0px;
+    --md-filled-text-field-focus-outline-color: transparent;
+    --md-filled-text-field-focus-outline-width: 0px;
 }
 
 md-filled-text-field:hover {
-    --md-filled-text-field-outline-color: var(--md-sys-color-primary);
+    --md-filled-text-field-outline-color: transparent;
+    --md-filled-text-field-outline-width: 0px;
 }
 
 [data-theme="dark"] md-filled-text-field {
@@ -1007,10 +979,16 @@ md-filled-text-field:hover {
     --md-filled-text-field-label-text-color: var(--md-sys-color-on-surface-variant);
     --md-filled-text-field-supporting-text-color: var(--md-sys-color-on-surface-variant);
     --md-filled-text-field-container-color: var(--md-sys-color-surface-variant);
+    --md-filled-text-field-outline-color: transparent;
+    --md-filled-text-field-outline-width: 0px;
+    --md-filled-text-field-focus-outline-color: transparent;
+    --md-filled-text-field-focus-outline-width: 0px;
 }
 
 [data-theme="dark"] md-filled-text-field:focus {
     --md-filled-text-field-input-text-color: var(--md-sys-color-on-surface);
+    --md-filled-text-field-outline-color: transparent;
+    --md-filled-text-field-outline-width: 0px;
 }
 
 /* Select improvements */
@@ -1072,12 +1050,8 @@ md-select-option {
 
 /* Dialog improvements */
 md-dialog {
-    border-radius: 28px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important;
-}
-
-[data-theme="dark"] md-dialog {
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+    border-radius: 24px !important;
+    box-shadow: var(--card-shadow-elevated) !important;
 }
 
 md-dialog[data-theme="dark"] {
@@ -1112,7 +1086,8 @@ md-dialog[data-theme="dark"] {
 
 [data-theme="dark"] .spectral-output {
     background: var(--md-sys-color-surface-variant) !important;
-    border-color: var(--md-sys-color-outline-variant) !important;
+    border: none !important;
+    outline: none !important;
 }
 
 /* Tabs Styling */

@@ -48,7 +48,7 @@ export class ThemeToggle {
       dialog.setAttribute('data-theme', theme);
     });
     
-    document.querySelectorAll('md-filled-card, md-outlined-card').forEach(card => {
+    document.querySelectorAll('.card').forEach(card => {
       card.setAttribute('data-theme', theme);
     });
   }

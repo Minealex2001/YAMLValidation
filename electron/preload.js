@@ -63,7 +63,38 @@ contextBridge.exposeInMainWorld('electronAPI', {
   },
   
   // Git API
-  gitPull: (directoryPath) => ipcRenderer.invoke('git:pull', directoryPath)
+  gitPull: (directoryPath) => ipcRenderer.invoke('git:pull', directoryPath),
+  
+  // Update API
+  updateCheck: () => ipcRenderer.invoke('update:check'),
+  updateDownload: () => ipcRenderer.invoke('update:download'),
+  updateInstall: () => ipcRenderer.invoke('update:install'),
+  
+  // Update events
+  onUpdateChecking: (callback) => {
+    ipcRenderer.on('update-checking', callback);
+    return () => ipcRenderer.removeListener('update-checking', callback);
+  },
+  onUpdateAvailable: (callback) => {
+    ipcRenderer.on('update-available', (event, info) => callback(info));
+    return () => ipcRenderer.removeListener('update-available', callback);
+  },
+  onUpdateNotAvailable: (callback) => {
+    ipcRenderer.on('update-not-available', (event, info) => callback(info));
+    return () => ipcRenderer.removeListener('update-not-available', callback);
+  },
+  onUpdateError: (callback) => {
+    ipcRenderer.on('update-error', (event, error) => callback(error));
+    return () => ipcRenderer.removeListener('update-error', callback);
+  },
+  onUpdateDownloadProgress: (callback) => {
+    ipcRenderer.on('update-download-progress', (event, progress) => callback(progress));
+    return () => ipcRenderer.removeListener('update-download-progress', callback);
+  },
+  onUpdateDownloaded: (callback) => {
+    ipcRenderer.on('update-downloaded', (event, info) => callback(info));
+    return () => ipcRenderer.removeListener('update-downloaded', callback);
+  }
 });
 
 // Expose js-yaml to renderer
